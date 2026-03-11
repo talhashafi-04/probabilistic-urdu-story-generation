@@ -19,41 +19,31 @@ EOT = '\uE002'
 def load_merges(merges_path):
     with open(merges_path, 'r', encoding='utf-8') as f:
         return [tuple(m) for m in json.load(f)]
+WORD_BOUNDARY = '│'
 
-
-
-def tokenize(text, merges):
-    """Tokenize using BPE merges with O(1) pair lookup."""
+def tokenize(text: str, merges: list) -> list[str]:
     for tag, byte in SPECIAL_TOKENS.items():
         text = text.replace(tag, byte)
 
     merge_rank = {pair: i for i, pair in enumerate(merges)}
-
     words = text.split()
     tokens = []
 
     for word in tqdm(words, desc="Tokenizing", unit="word"):
         symbols = list(word)
-
         while len(symbols) > 1:
-            best_idx = -1
-            best_rank = float('inf')
+            best_idx, best_rank = -1, float('inf')
             for i in range(len(symbols) - 1):
-                pair = (symbols[i], symbols[i+1])
-                rank = merge_rank.get(pair, float('inf'))
+                rank = merge_rank.get((symbols[i], symbols[i+1]), float('inf'))
                 if rank < best_rank:
-                    best_rank = rank
-                    best_idx = i
-
+                    best_rank, best_idx = rank, i
             if best_idx == -1 or best_rank == float('inf'):
                 break
-
             symbols[best_idx:best_idx+2] = [''.join(symbols[best_idx:best_idx+2])]
-
         tokens.extend(symbols)
+        tokens.append(WORD_BOUNDARY)  # ← only change
 
     return tokens
-
 # ── N-gram counting ───────────────────────────────────────────────────────────
 
 def count_ngrams(tokens):

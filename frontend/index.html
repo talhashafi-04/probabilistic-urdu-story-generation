@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>داستان گو — Urdu Story Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&family=Cinzel:wght@400;600;700&family=IM+Fell+English+SC&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── CSS Variables ── */
+    :root {
+      --ink:        #2C1F0E;
+      --ink-soft:   #4A3520;
+      --ink-faint:  #7A6248;
+      --parchment:  #F5EDD8;
+      --parchment2: #EDE0C4;
+      --parchment3: #E2D0A8;
+      --gold:       #B8860B;
+      --gold-light: #D4A843;
+      --gold-pale:  #F0D890;
+      --rust:       #8B3A1A;
+      --cream:      #FAF6EC;
+      --shadow:     rgba(44, 31, 14, 0.18);
+      --shadow-deep:rgba(44, 31, 14, 0.35);
+    }
+
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--ink);
+      background-image:
+        radial-gradient(ellipse at 20% 10%, #3D2810 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 90%, #1A0F05 0%, transparent 50%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      min-height: 100vh;
+      font-family: 'Noto Nastaliq Urdu', serif;
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ── Decorative border frame ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 12px;
+      border: 1px solid var(--gold);
+      opacity: 0.25;
+      pointer-events: none;
+      z-index: 100;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 16px;
+      border: 1px solid var(--gold);
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* ── Page wrapper ── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+      animation: fadeDown 1s ease both;
+    }
+
+    .header-ornament {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 6px;
+      color: var(--gold);
+      text-transform: uppercase;
+      opacity: 0.8;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .header h1 {
+      font-family: 'Noto Nastaliq Urdu', serif;
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 700;
+      color: var(--parchment);
+      line-height: 1.2;
+      text-shadow:
+        0 0 60px rgba(184,134,11,0.3),
+        0 2px 4px rgba(0,0,0,0.5);
+      letter-spacing: -1px;
+    }
+
+    .header-sub {
+      font-family: 'IM Fell English SC', serif;
+      font-size: 13px;
+      letter-spacing: 4px;
+      color: var(--gold-light);
+      opacity: 0.7;
+      margin-top: 12px;
+      text-transform: uppercase;
+      direction: ltr;
+    }
+
+    .header-divider {
+      margin: 20px auto 0;
+      width: 200px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      position: relative;
+    }
+    .header-divider::before {
+      content: '✦';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--gold);
+      font-size: 10px;
+      background: var(--ink);
+      padding: 0 8px;
+    }
+
+    /* ── Main card (parchment) ── */
+    .card {
+      width: 100%;
+      background:
+        linear-gradient(160deg, var(--cream) 0%, var(--parchment) 40%, var(--parchment2) 100%);
+      border-radius: 2px;
+      box-shadow:
+        0 0 0 1px rgba(184,134,11,0.4),
+        0 0 0 3px rgba(184,134,11,0.1),
+        0 20px 60px var(--shadow-deep),
+        0 4px 16px var(--shadow),
+        inset 0 1px 0 rgba(255,255,255,0.6);
+      padding: 48px 52px 52px;
+      position: relative;
+      animation: fadeUp 1s ease 0.2s both;
+    }
+
+    /* Parchment texture overlay */
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      border-radius: 2px;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    /* Corner ornaments */
+    .card-corner {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      opacity: 0.5;
+    }
+    .card-corner svg { width: 100%; height: 100%; }
+    .card-corner.tl { top: 12px; right: 12px; }
+    .card-corner.tr { top: 12px; left: 12px; transform: scaleX(-1); }
+    .card-corner.bl { bottom: 12px; right: 12px; transform: scaleY(-1); }
+    .card-corner.br { bottom: 12px; left: 12px; transform: scale(-1,-1); }
+
+    /* ── Section label ── */
+    .section-label {
+      font-family: 'IM Fell English SC', serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      direction: ltr;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    /* ── Input area ── */
+    .input-section { position: relative; margin-bottom: 28px; }
+
+    .input-wrap {
+      position: relative;
+      border: 1px solid var(--parchment3);
+      border-bottom: 2px solid var(--gold);
+      background: rgba(255,255,255,0.35);
+      transition: all 0.3s ease;
+    }
+    .input-wrap:focus-within {
+      border-color: var(--gold);
+      border-bottom-color: var(--rust);
+      background: rgba(255,255,255,0.55);
+      box-shadow: 0 4px 20px rgba(184,134,11,0.15);
+    }
+
+    #prefix-input {
+      width: 100%;
+      padding: 18px 20px 14px;
+      font-family: 'Noto Nastaliq Urdu', serif;
+      font-size: 1.4rem;
+      color: var(--ink);
+      background: transparent;
+      border: none;
+      outline: none;
+      text-align: right;
+      direction: rtl;
+      line-height: 1.8;
+      resize: none;
+      min-height: 80px;
+    }
+    #prefix-input::placeholder { color: var(--ink-faint); opacity: 0.6; }
+
+    /* ── Controls row ── */
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 28px;
+      direction: ltr;
+    }
+
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'IM Fell English SC', serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 8px;
+    }
+    .control-group label span {
+      font-size: 12px;
+      color: var(--gold);
+      letter-spacing: 0;
+      font-family: 'Cinzel', serif;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      -webkit-appearance: none;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold) var(--pct, 50%), var(--parchment3) var(--pct, 50%));
+      outline: none;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: 2px solid var(--parchment);
+      box-shadow: 0 0 6px rgba(184,134,11,0.5);
+      transition: transform 0.15s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.3); }
+
+    /* ── Generate button ── */
+    .btn-generate {
+      width: 100%;
+      padding: 18px 32px;
+      background: linear-gradient(135deg, var(--ink) 0%, #3D2810 100%);
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
+      font-family: 'Noto Nastaliq Urdu', serif;
+      font-size: 1.3rem;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      letter-spacing: 1px;
+      margin-bottom: 32px;
+    }
+    .btn-generate::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--rust) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .btn-generate:hover::before { opacity: 0.15; }
+    .btn-generate:hover {
+      box-shadow: 0 0 30px rgba(184,134,11,0.3), 0 4px 16px rgba(0,0,0,0.3);
+      transform: translateY(-1px);
+    }
+    .btn-generate:active { transform: translateY(0); }
+    .btn-generate span { position: relative; z-index: 1; }
+    .btn-generate:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ── Divider ── */
+    .ornamental-divider {
+      text-align: center;
+      margin: 8px 0 28px;
+      color: var(--gold);
+      opacity: 0.4;
+      font-size: 18px;
+      letter-spacing: 12px;
+      direction: ltr;
+    }
+
+    /* ── Story output ── */
+    .output-section { position: relative; min-height: 120px; }
+
+    .output-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      direction: ltr;
+    }
+
+    .btn-copy {
+      font-family: 'IM Fell English SC', serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      background: none;
+      border: 1px solid var(--parchment3);
+      padding: 5px 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-copy:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-copy.copied { color: var(--rust); border-color: var(--rust); }
+
+    #story-output {
+      width: 100%;
+      min-height: 200px;
+      padding: 24px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 100%),
+        repeating-linear-gradient(
+          transparent,
+          transparent 31px,
+          rgba(184,134,11,0.12) 31px,
+          rgba(184,134,11,0.12) 32px
+        );
+      border: 1px solid rgba(184,134,11,0.2);
+      border-top: 2px solid var(--gold);
+      font-family: 'Noto Nastaliq Urdu', serif;
+      font-size: 1.25rem;
+      line-height: 2.1;
+      color: var(--ink);
+      direction: rtl;
+      text-align: right;
+      position: relative;
+      word-spacing: 2px;
+    }
+
+    .cursor-blink {
+      display: inline-block;
+      width: 2px;
+      height: 1.1em;
+      background: var(--rust);
+      margin-right: 2px;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+
+    .placeholder-text {
+      color: var(--ink-faint);
+      opacity: 0.45;
+      font-style: italic;
+      font-size: 1.1rem;
+    }
+
+    /* Token counter */
+    .token-counter {
+      direction: ltr;
+      text-align: right;
+      margin-top: 10px;
+      font-family: 'IM Fell English SC', serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--ink-faint);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .token-counter.visible { opacity: 1; }
+
+    /* ── Loading state ── */
+    .generating-indicator {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      direction: ltr;
+      margin-bottom: 10px;
+    }
+    .generating-indicator.active { display: flex; }
+    .gen-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: pulse 1.2s ease infinite;
+    }
+    .gen-dot:nth-child(2) { animation-delay: 0.2s; }
+    .gen-dot:nth-child(3) { animation-delay: 0.4s; }
+    .gen-label {
+      font-family: 'IM Fell English SC', serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 48px;
+      text-align: center;
+      animation: fadeUp 1s ease 0.6s both;
+      direction: ltr;
+    }
+    .footer-line {
+      width: 120px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(184,134,11,0.3), transparent);
+      margin: 0 auto 16px;
+    }
+    .footer p {
+      font-family: 'IM Fell English SC', serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(245,237,216,0.3);
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50%       { transform: scale(1.4); opacity: 1; }
+    }
+    @keyframes tokenFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .token-reveal {
+      animation: tokenFadeIn 0.15s ease both;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .card { padding: 28px 24px 32px; }
+      .controls { grid-template-columns: 1fr; }
+      .header h1 { font-size: 2.8rem; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <!-- Header -->
+    <header class="header">
+      <span class="header-ornament">Probabilistic Language Model</span>
+      <h1>داستان گو</h1>
+      <p class="header-sub">Urdu Children's Story Generator</p>
+      <div class="header-divider"></div>
+    </header>
+
+    <!-- Main card -->
+    <main class="card">
+
+      <!-- Corner ornaments -->
+      <div class="card-corner tl">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 2 L2 14 M2 2 L14 2 M2 2 L8 8" stroke="#B8860B" stroke-width="1" stroke-linecap="round"/>
+          <circle cx="2" cy="2" r="2" fill="#B8860B"/>
+        </svg>
+      </div>
+      <div class="card-corner tr">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 2 L2 14 M2 2 L14 2 M2 2 L8 8" stroke="#B8860B" stroke-width="1" stroke-linecap="round"/>
+          <circle cx="2" cy="2" r="2" fill="#B8860B"/>
+        </svg>
+      </div>
+      <div class="card-corner bl">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 2 L2 14 M2 2 L14 2 M2 2 L8 8" stroke="#B8860B" stroke-width="1" stroke-linecap="round"/>
+          <circle cx="2" cy="2" r="2" fill="#B8860B"/>
+        </svg>
+      </div>
+      <div class="card-corner br">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 2 L2 14 M2 2 L14 2 M2 2 L8 8" stroke="#B8860B" stroke-width="1" stroke-linecap="round"/>
+          <circle cx="2" cy="2" r="2" fill="#B8860B"/>
+        </svg>
+      </div>
+
+      <!-- Input -->
+      <div class="input-section">
+        <span class="section-label">Opening Line / داستان کا آغاز</span>
+        <div class="input-wrap">
+          <textarea
+            id="prefix-input"
+            placeholder="یہاں اپنی کہانی کا آغاز لکھیں…"
+            rows="2"
+            >ایک دفعہ کا ذکر ہے کہ
+        </textarea>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <div class="control-group">
+          <label>
+            Max Length
+            <span id="length-val">150</span>
+          </label>
+          <input type="range" id="length-slider" min="50" max="400" value="150"
+            oninput="updateSlider(this, 'length-val')" />
+        </div>
+        <div class="control-group">
+          <label>
+            Temperature
+            <span id="temp-val">1.0</span>
+          </label>
+          <input type="range" id="temp-slider" min="0.1" max="2.0" step="0.1" value="1.0"
+            oninput="updateSlider(this, 'temp-val', true)" />
+        </div>
+      </div>
+
+      <!-- Button -->
+      <button class="btn-generate" id="gen-btn" onclick="generate()">
+        <span>داستان سنائیں ✦</span>
+      </button>
+
+      <div class="ornamental-divider">· · ✦ · ·</div>
+
+      <!-- Output -->
+      <div class="output-section">
+        <div class="output-label-row">
+          <span class="section-label" style="margin-bottom:0">Generated Story / داستان</span>
+          <button class="btn-copy" id="copy-btn" onclick="copyStory()">Copy</button>
+        </div>
+
+        <div class="generating-indicator" id="gen-indicator">
+          <div class="gen-dot"></div>
+          <div class="gen-dot"></div>
+          <div class="gen-dot"></div>
+          <span class="gen-label">Weaving story…</span>
+        </div>
+
+        <div id="story-output">
+          <span class="placeholder-text">آپ کی داستان یہاں ظاہر ہوگی…</span>
+        </div>
+
+        <div class="token-counter" id="token-counter">
+          <span id="token-count">0</span> tokens generated
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-line"></div>
+      <p>BPE Tokenizer · Trigram Language Model · Deleted Interpolation</p>
+    </footer>
+
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:8000';
+    let tokenCount = 0;
+    let isGenerating = false;
+
+    // ── Slider update ──────────────────────────────────────────────────────
+    function updateSlider(el, labelId, isFloat = false) {
+      const val = isFloat ? parseFloat(el.value).toFixed(1) : el.value;
+      document.getElementById(labelId).textContent = val;
+      const min = parseFloat(el.min), max = parseFloat(el.max), v = parseFloat(el.value);
+      const pct = ((v - min) / (max - min) * 100).toFixed(1) + '%';
+      el.style.setProperty('--pct', pct);
+    }
+
+    // Init slider fill on load
+    document.querySelectorAll('input[type="range"]').forEach(el => {
+      const min = parseFloat(el.min), max = parseFloat(el.max), v = parseFloat(el.value);
+      const pct = ((v - min) / (max - min) * 100).toFixed(1) + '%';
+      el.style.setProperty('--pct', pct);
+    });
+
+    // ── Copy story ─────────────────────────────────────────────────────────
+    function copyStory() {
+      const output = document.getElementById('story-output');
+      const text = output.innerText.replace('آپ کی داستان یہاں ظاہر ہوگی…', '').trim();
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copy-btn');
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
+    // ── Generate ───────────────────────────────────────────────────────────
+    async function generate() {
+      if (isGenerating) return;
+
+      const prefix = document.getElementById('prefix-input').value.trim();
+      if (!prefix) {
+        document.getElementById('prefix-input').focus();
+        return;
+      }
+
+      const maxLength  = parseInt(document.getElementById('length-slider').value);
+      const temperature = parseFloat(document.getElementById('temp-slider').value);
+
+      isGenerating = true;
+      tokenCount = 0;
+
+      const btn = document.getElementById('gen-btn');
+      btn.disabled = true;
+      btn.querySelector('span').textContent = 'لکھا جا رہا ہے…';
+
+      const output = document.getElementById('story-output');
+      output.innerHTML = '<span class="cursor-blink"></span>';
+
+      document.getElementById('gen-indicator').classList.add('active');
+      document.getElementById('token-counter').classList.remove('visible');
+
+      try {
+        const response = await fetch(`${API_BASE}/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prefix, max_length: maxLength, temperature })
+        });
+
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let storyText = '';
+
+        document.getElementById('gen-indicator').classList.remove('active');
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop();
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const token = line.slice(6);
+            if (token === '[DONE]') break;
+
+            // Replace special tags with styled versions
+            let display = token;
+            if (token === '<EOS>') display = ' ۔ ';
+            else if (token === '<EOP>') display = '\n\n';
+            else if (token === '<EOT>') { display = ''; break; }
+
+            storyText += display + ' ';
+            tokenCount++;
+
+            // Update output with cursor
+            output.innerHTML =
+              storyText.replace(/\n\n/g, '<br><br>') +
+              '<span class="cursor-blink"></span>';
+
+            document.getElementById('token-count').textContent = tokenCount;
+            document.getElementById('token-counter').classList.add('visible');
+
+            // Auto scroll
+            output.scrollTop = output.scrollHeight;
+          }
+        }
+
+        // Final — remove cursor
+        output.innerHTML = storyText.replace(/\n\n/g, '<br><br>') || '<span class="placeholder-text">کوئی داستان تیار نہ ہو سکی۔</span>';
+
+      } catch (err) {
+        output.innerHTML = `<span style="color:var(--rust);font-size:1rem;direction:ltr;">
+          Error: ${err.message}. Make sure the backend is running on port 8000.
+        </span>`;
+        document.getElementById('gen-indicator').classList.remove('active');
+      }
+
+      isGenerating = false;
+      btn.disabled = false;
+      btn.querySelector('span').textContent = 'داستان سنائیں ✦';
+    }
+
+    // ── Enter key to generate ──────────────────────────────────────────────
+    document.getElementById('prefix-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && e.ctrlKey) generate();
+    });
+  </script>
+</body>
+</html>
