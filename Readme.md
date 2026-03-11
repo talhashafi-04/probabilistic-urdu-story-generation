@@ -11,7 +11,7 @@
 ![Chatbot Screenshot](docs/screenshot.png)
 
 > *Type an Urdu opening line, hit داستان سنائیں, and watch your story unfold word by word.*
-TRY NOW : https://urdu-story-generation-eight.vercel.app/
+> TRY NOW : https://urdu-story-generation-eight.vercel.app/
 
 ---
 
