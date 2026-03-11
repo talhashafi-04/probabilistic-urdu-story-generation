@@ -364,6 +364,9 @@
       text-align: right;
       position: relative;
       word-spacing: 2px;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        overflow: hidden;
     }
 
     .cursor-blink {
@@ -526,8 +529,7 @@
             id="prefix-input"
             placeholder="یہاں اپنی کہانی کا آغاز لکھیں…"
             rows="2"
-            >ایک دفعہ کا ذکر ہے کہ
-        </textarea>
+            >ایک دفعہ کا ذکر ہے کہ</textarea>
         </div>
       </div>
 
@@ -592,7 +594,7 @@
   </div>
 
   <script>
-    const API_BASE = 'http://localhost:8000';
+    const API_BASE = 'https://probabilistic-urdu-story-generation.onrender.com';
     let tokenCount = 0;
     let isGenerating = false;
 
@@ -680,13 +682,17 @@
             const token = line.slice(6);
             if (token === '[DONE]') break;
 
-            // Replace special tags with styled versions
-            let display = token;
-            if (token === '<EOS>') display = ' ۔ ';
-            else if (token === '<EOP>') display = '\n\n';
-            else if (token === '<EOT>') { display = ''; break; }
-
-            storyText += display + ' ';
+            if (token === '<EOS>') {
+                storyText += ' ۔ ';
+                } 
+                else if (token === '<EOP>') {
+                storyText = storyText.trimEnd() + '\n\n';
+                } else if (token === '<EOT>') {
+                break;
+                } else {
+                storyText += token + ' ';
+                }
+                
             tokenCount++;
 
             // Update output with cursor

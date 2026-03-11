@@ -18,8 +18,6 @@ SPECIAL_TOKENS = {
 EOT = '\uE002'
 EOS = '\uE000'
 EOP = '\uE001'
-INVERSE_SPECIAL = {v: k for k, v in SPECIAL_TOKENS.items()}
-WORD_BOUNDARY = '│'
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 BASE_DIR    = Path(__file__).parent.parent
@@ -47,28 +45,44 @@ print(f"Model loaded. Vocab: {len(VOCAB):,} | Trigrams: {len(TRIGRAMS):,}")
 
 # ── BPE Tokenizer ─────────────────────────────────────────────────────────────
 
+def tokenize_word(word: str) -> list[str]:
+    """Tokenize a single word into BPE subwords."""
+    symbols = list(word)
+    while len(symbols) > 1:
+        best_idx, best_rank = -1, float('inf')
+        for i in range(len(symbols) - 1):
+            rank = MERGE_RANK.get((symbols[i], symbols[i+1]), float('inf'))
+            if rank < best_rank:
+                best_rank, best_idx = rank, i
+        if best_idx == -1 or best_rank == float('inf'):
+            break
+        symbols[best_idx:best_idx+2] = [''.join(symbols[best_idx:best_idx+2])]
+    return symbols
+
 def tokenize(text: str) -> list[str]:
+    """Tokenize full text — matches exactly how train_trigram.py tokenizes."""
     for tag, byte in SPECIAL_TOKENS.items():
         text = text.replace(tag, byte)
+    tokens = []
+    for word in text.split():
+        tokens.extend(tokenize_word(word))
+    return tokens
 
-    raw_words = text.split()
-    all_tokens = []
-
-    for word in raw_words:
-        symbols = list(word)
-        while len(symbols) > 1:
-            best_idx, best_rank = -1, float('inf')
-            for i in range(len(symbols) - 1):
-                rank = MERGE_RANK.get((symbols[i], symbols[i+1]), float('inf'))
-                if rank < best_rank:
-                    best_rank, best_idx = rank, i
-            if best_idx == -1 or best_rank == float('inf'):
-                break
-            symbols[best_idx:best_idx+2] = [''.join(symbols[best_idx:best_idx+2])]
-        all_tokens.extend(symbols)
-        all_tokens.append(WORD_BOUNDARY)  # mark end of each word
-
-    return all_tokens
+def tokenize_with_boundaries(text: str) -> list[list[str]]:
+    """
+    Tokenize text and return list of word-groups.
+    Each entry is a list of BPE tokens belonging to the same original word.
+    Special tokens are their own group of 1.
+    """
+    for tag, byte in SPECIAL_TOKENS.items():
+        text = text.replace(tag, byte)
+    groups = []
+    for word in text.split():
+        if word in (EOS, EOP, EOT):
+            groups.append([word])
+        else:
+            groups.append(tokenize_word(word))
+    return groups
 
 # ── Interpolated probability ──────────────────────────────────────────────────
 
@@ -147,27 +161,24 @@ def generate_full(req: GenerateRequest):
         if next_tok == EOT:
             break
 
-    # Reconstruct words from tokens + boundaries
-    words, buf = [], []
+    # Decode
+    parts = []
     for t in tokens:
-        if t == WORD_BOUNDARY:
-            if buf: words.append(''.join(buf)); buf = []
-        elif t in (EOS, EOP, EOT):
-            if buf: words.append(''.join(buf)); buf = []
-            if t == EOS:   words.append('۔')
-            elif t == EOP: words.append('\n\n')
-            elif t == EOT: break
-        else:
-            buf.append(t)
-    if buf: words.append(''.join(buf))
+        if t == EOS:  parts.append('۔')
+        elif t == EOP: parts.append('\n\n')
+        elif t == EOT: break
+        else: parts.append(t)
 
-    story = ' '.join(words).replace(' \n\n ', '\n\n')
+    story = ' '.join(parts).replace(' \n\n ', '\n\n')
     return GenerateResponse(story=story, token_count=len(tokens))
 
 
 @app.post("/generate")
 async def generate_stream(req: GenerateRequest):
-    """Streams the story word by word using SSE."""
+    """
+    Streams the story word by word using SSE.
+    Each SSE event is one complete reconstructed word (subwords joined).
+    """
     if not req.prefix.strip():
         raise HTTPException(status_code=400, detail="Prefix cannot be empty.")
     if not (1 <= req.max_length <= 500):
@@ -175,63 +186,85 @@ async def generate_stream(req: GenerateRequest):
     if not (0.1 <= req.temperature <= 2.0):
         raise HTTPException(status_code=400, detail="temperature must be between 0.1 and 2.0.")
 
-    prefix_tokens = tokenize(req.prefix)
+    # Get flat tokens (for generation) and word groups (for prefix display)
+    prefix_groups = tokenize_with_boundaries(req.prefix)
+    flat_tokens   = [tok for group in prefix_groups for tok in group]
 
     async def word_stream():
-        tokens = list(prefix_tokens)
+        tokens = list(flat_tokens)
+
+        # --- Stream prefix words first ---
+        for group in prefix_groups:
+            word = ''.join(group)
+            if word == EOS:
+                yield "data: <EOS>\n\n"
+            elif word == EOP:
+                yield "data: <EOP>\n\n"
+            elif word == EOT:
+                yield "data: [DONE]\n\n"
+                return
+            else:
+                yield f"data: {word}\n\n"
+
+        # --- Generate token by token, accumulate into words ---
+        # Strategy: sample next token. If it's a special token, flush immediately.
+        # Otherwise accumulate until we get a token that IS a full known word
+        # (i.e. it exists standalone in vocab AND joining buffer+token won't
+        # extend to another known word). Since the model was trained on flat
+        # BPE tokens without boundaries, we use a simple heuristic:
+        # flush the buffer whenever the current token appears to be a
+        # "complete" merge (no further merge possible with next likely token).
+        # The safest approach: accumulate tokens between special tokens,
+        # and rely on the fact that the model generates ~1 token per word
+        # for common words (fully merged) and multiple for rare ones.
+        # We flush on every token that is in VOCAB as a standalone entry
+        # that is longer than 1 char, OR after accumulating 3+ subwords.
+
         word_buffer = []
 
-        # Stream prefix words first
-        for t in prefix_tokens:
-            if t == WORD_BOUNDARY:
-                if word_buffer:
-                    yield f"data: {''.join(word_buffer)}\n\n"
-                    word_buffer = []
-            elif t in (EOS, EOP, EOT):
-                if word_buffer:
-                    yield f"data: {''.join(word_buffer)}\n\n"
-                    word_buffer = []
-                if t == EOS:   yield "data: <EOS>\n\n"
-                elif t == EOP: yield "data: <EOP>\n\n"
-            else:
-                word_buffer.append(t)
-
-        # Generate new tokens
         for _ in range(req.max_length):
             w1 = tokens[-2] if len(tokens) >= 2 else ''
             w2 = tokens[-1] if len(tokens) >= 1 else ''
             next_tok = sample_next(w1, w2, req.temperature)
             tokens.append(next_tok)
 
-            if next_tok == WORD_BOUNDARY:
+            if next_tok in (EOS, EOP, EOT):
+                # Flush buffer first
                 if word_buffer:
                     yield f"data: {''.join(word_buffer)}\n\n"
                     word_buffer = []
-                    await asyncio.sleep(0.06)
+                    await asyncio.sleep(0.05)
 
-            elif next_tok == EOS:
-                if word_buffer:
-                    yield f"data: {''.join(word_buffer)}\n\n"
-                    word_buffer = []
-                yield "data: <EOS>\n\n"
-                await asyncio.sleep(0.08)
-
-            elif next_tok == EOP:
-                if word_buffer:
-                    yield f"data: {''.join(word_buffer)}\n\n"
-                    word_buffer = []
-                yield "data: <EOP>\n\n"
-                await asyncio.sleep(0.08)
-
-            elif next_tok == EOT:
-                if word_buffer:
-                    yield f"data: {''.join(word_buffer)}\n\n"
-                yield "data: [DONE]\n\n"
-                return
+                if next_tok == EOS:
+                    yield "data: <EOS>\n\n"
+                    await asyncio.sleep(0.05)
+                elif next_tok == EOP:
+                    yield "data: <EOP>\n\n"
+                    await asyncio.sleep(0.08)
+                elif next_tok == EOT:
+                    yield "data: [DONE]\n\n"
+                    return
 
             else:
                 word_buffer.append(next_tok)
+                joined = ''.join(word_buffer)
 
+                # Flush if:
+                # 1. Single token that is multi-char (a merged word) → definitely complete
+                # 2. Joined buffer is a known vocab entry → complete word
+                # 3. Buffer has 4+ subwords → force flush
+                should_flush = (
+                    (len(word_buffer) == 1 and len(next_tok) > 1) or
+                    (len(word_buffer) > 1 and joined in UNIGRAMS) or
+                    (len(word_buffer) >= 4)
+                )
+
+                if should_flush:
+                    yield f"data: {joined}\n\n"
+                    word_buffer = []
+                    await asyncio.sleep(0.05)
+
+        # Flush any remaining
         if word_buffer:
             yield f"data: {''.join(word_buffer)}\n\n"
         yield "data: [DONE]\n\n"

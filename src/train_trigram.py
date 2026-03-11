@@ -19,7 +19,7 @@ EOT = '\uE002'
 def load_merges(merges_path):
     with open(merges_path, 'r', encoding='utf-8') as f:
         return [tuple(m) for m in json.load(f)]
-WORD_BOUNDARY = '│'
+
 
 def tokenize(text: str, merges: list) -> list[str]:
     for tag, byte in SPECIAL_TOKENS.items():
@@ -41,7 +41,6 @@ def tokenize(text: str, merges: list) -> list[str]:
                 break
             symbols[best_idx:best_idx+2] = [''.join(symbols[best_idx:best_idx+2])]
         tokens.extend(symbols)
-        tokens.append(WORD_BOUNDARY)  # ← only change
 
     return tokens
 # ── N-gram counting ───────────────────────────────────────────────────────────
