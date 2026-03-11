@@ -1,0 +1,741 @@
+<!doctype html><html lang="en" prefix="og: http://ogp.me/ns#" xmlns:og="http://ogp.me/ns#" xmlns:fb="http://ogp.me/ns/fb#"><head>    <script>class UPLazyLoadScripts {constructor(e) {this.triggerEvents = e, this.eventOptions = {passive: !0}, this.userEventListener = this.triggerListener.bind(this), this.delayedScripts = {normal: [],async: [],defer: []}, this.allJQueries = []}_addUserInteractionListener(e) {this.triggerEvents.forEach((t => window.addEventListener(t, e.userEventListener, e.eventOptions)))}_removeUserInteractionListener(e) {this.triggerEvents.forEach((t => window.removeEventListener(t, e.userEventListener, e.eventOptions)))}triggerListener() {this._removeUserInteractionListener(this), "loading" === document.readyState ? document.addEventListener("DOMContentLoaded", this._loadEverythingNow.bind(this)) : this._loadEverythingNow()}async _loadEverythingNow() {this._delayEventListeners(), this._delayJQueryReady(this), this._handleDocumentWrite(), this._registerAllDelayedScripts(), this._preloadAllScripts(), await this._loadScriptsFromList(this.delayedScripts.normal), await this._loadScriptsFromList(this.delayedScripts.defer), await this._loadScriptsFromList(this.delayedScripts.async), await this._triggerDOMContentLoaded(), await this._triggerWindowLoad(), window.dispatchEvent(new Event("rocket-allScriptsLoaded"))}_registerAllDelayedScripts() {document.querySelectorAll("script[type=uplazyloadscript]").forEach((e => {e.hasAttribute("src") ? e.hasAttribute("async") && !1 !== e.async ? this.delayedScripts.async.push(e) : e.hasAttribute("defer") && !1 !== e.defer || "module" === e.getAttribute("data-rocket-type") ? this.delayedScripts.defer.push(e) : this.delayedScripts.normal.push(e) : this.delayedScripts.normal.push(e)}))}async _transformScript(e) {return await this._requestAnimFrame(), new Promise((t => {const n = document.createElement("script");let i;[...e.attributes].forEach((e => {let t = e.nodeName;"type" !== t && ("data-rocket-type" === t && (t = "type", i = e.nodeValue), n.setAttribute(t, e.nodeValue))})), e.hasAttribute("src") && this._isValidScriptType(i) ? (n.addEventListener("load", t), n.addEventListener("error", t)) : (n.text = e.text, t()), e.parentNode.replaceChild(n, e)}))}_isValidScriptType(e) {return !e || "" === e || "string" == typeof e && ["text/javascript", "text/x-javascript", "text/ecmascript", "text/jscript", "application/javascript", "application/x-javascript", "application/ecmascript", "application/jscript", "module"].includes(e.toLowerCase())}async _loadScriptsFromList(e) {const t = e.shift();return t ? (await this._transformScript(t), this._loadScriptsFromList(e)) : Promise.resolve()}_preloadAllScripts() {var e = document.createDocumentFragment();[...this.delayedScripts.normal, ...this.delayedScripts.defer, ...this.delayedScripts.async].forEach((t => {const n = t.getAttribute("src");if (n) {const t = document.createElement("link");t.href = n, t.rel = "preload", t.as = "script", e.appendChild(t)}})), document.head.appendChild(e)}_delayEventListeners() {let e = {};function t(t, n) {! function(t) {function n(n) {return e[t].eventsToRewrite.indexOf(n) >= 0 ? "rocket-" + n : n}e[t] || (e[t] = {originalFunctions: {add: t.addEventListener,remove: t.removeEventListener},eventsToRewrite: []}, t.addEventListener = function() {arguments[0] = n(arguments[0]), e[t].originalFunctions.add.apply(t, arguments)}, t.removeEventListener = function() {arguments[0] = n(arguments[0]), e[t].originalFunctions.remove.apply(t, arguments)})}(t), e[t].eventsToRewrite.push(n)}function n(e, t) {let n = e[t];Object.defineProperty(e, t, {get: () => n || function() {},set(i) {e["rocket" + t] = n = i}})}t(document, "DOMContentLoaded"), t(window, "DOMContentLoaded"), t(window, "load"), t(window, "pageshow"), t(document, "readystatechange"), n(document, "onreadystatechange"), n(window, "onload"), n(window, "onpageshow")}_delayJQueryReady(e) {let t = window.jQuery;Object.defineProperty(window, "jQuery", {get: () => t,set(n) {if (n && n.fn && !e.allJQueries.includes(n)) {n.fn.ready = n.fn.init.prototype.ready = function(t) {e.domReadyFired ? t.bind(document)(n) : document.addEventListener("rocket-DOMContentLoaded", (() => t.bind(document)(n)))};const t = n.fn.on;n.fn.on = n.fn.init.prototype.on = function() {if (this[0] === window) {function e(e) {return e.split(" ").map((e => "load" === e || 0 === e.indexOf("load.") ? "rocket-jquery-load" : e)).join(" ")}"string" == typeof arguments[0] || arguments[0] instanceof String ? arguments[0] = e(arguments[0]) : "object" == typeof arguments[0] && Object.keys(arguments[0]).forEach((t => {delete Object.assign(arguments[0], {[e(t)]: arguments[0][t]})[t]}))}return t.apply(this, arguments), this}, e.allJQueries.push(n)}t = n}})}async _triggerDOMContentLoaded() {this.domReadyFired = !0, await this._requestAnimFrame(), document.dispatchEvent(new Event("rocket-DOMContentLoaded")), await this._requestAnimFrame(), window.dispatchEvent(new Event("rocket-DOMContentLoaded")), await this._requestAnimFrame(), document.dispatchEvent(new Event("rocket-readystatechange")), await this._requestAnimFrame(), document.rocketonreadystatechange && document.rocketonreadystatechange()}async _triggerWindowLoad() {await this._requestAnimFrame(), window.dispatchEvent(new Event("rocket-load")), await this._requestAnimFrame(), window.rocketonload && window.rocketonload(), await this._requestAnimFrame(), this.allJQueries.forEach((e => e(window).trigger("rocket-jquery-load"))), window.dispatchEvent(new Event("rocket-pageshow")), await this._requestAnimFrame(), window.rocketonpageshow && window.rocketonpageshow()}_handleDocumentWrite() {const e = new Map;document.write = document.writeln = function(t) {const n = document.currentScript;n || console.error("unable to document.write this: " + t);const i = document.createRange(),r = n.parentElement;let a = e.get(n);void 0 === a && (a = n.nextSibling, e.set(n, a));const o = document.createDocumentFragment();i.setStart(o, 0), o.appendChild(i.createContextualFragment(t)), r.insertBefore(o, a)}}async _requestAnimFrame() {return new Promise((e => requestAnimationFrame(e)))}static run() {const e = new UPLazyLoadScripts(["keydown", "mousemove", "touchmove", "touchstart", "touchend", "wheel"]);e._addUserInteractionListener(e)}}UPLazyLoadScripts.run();</script>        <meta http-equiv="X-UA-Compatible" content="IE=edge">        <meta name="viewport" content="width=device-width, initial-scale=1">        <meta name="google" content="notranslate" />                                                                    <link rel="shortcut icon" href="https://photo-cdn.urdupoint.com/daily/images/favicon.ico" type="image/x-icon"/>                <link rel="dns-prefetch" href="//cdn.urdupoint.com/">        <link rel="dns-prefetch" href="//photo-cdn.urdupoint.com/">        <link rel="dns-prefetch" href="//bucket69.urdupoint.com">        <link rel="dns-prefetch" href="//d31qbv1cthcecs.cloudfront.net"/>                <link rel='dns-prefetch' href='//fonts.gstatic.com' />        <link rel='dns-prefetch' href='//securepubads.g.doubleclick.net' />        <link rel='dns-prefetch' href='//pagead2.googlesyndication.com' />        <link rel='dns-prefetch' href='//api.twitter.com' />        <link rel='dns-prefetch' href='//adservice.google.com' />        <link rel='dns-prefetch' href='//twitter.com' />        <link rel='dns-prefetch' href='//platform.twitter.com' />        <link rel='dns-prefetch' href='//connect.facebook.net' />        <link rel='dns-prefetch' href='//static.ak.facebook.com' />        <link rel='dns-prefetch' href='//s-static.ak.facebook.com' />        <link rel='dns-prefetch' href='//fbstatic-a.akamaihd.net' />        <link rel='dns-prefetch' href='//apis.google.com' />        <link rel='dns-prefetch' href='//ssl.gstatic.com' />        <link rel='dns-prefetch' href='//linkedin.com' />        <link rel='dns-prefetch' href='//platform.linkedin.com' />        <link rel='dns-prefetch' href='//static.licdn.com' />        <link rel='dns-prefetch' href='//google-analytics.com' />        <link rel='dns-prefetch' href='//ajax.googleapis.com' />        <link rel='dns-prefetch' href='//themes.googleusercontent.com' />        <link rel='dns-prefetch' href='//cdn.ampproject.org' />        <link rel='dns-prefetch' href='//googletagservices.com' />        <link rel='dns-prefetch' href='//urdupoint.com' />        <link rel='dns-prefetch' href='//tpc.googlesyndication.com' />        <link rel='dns-prefetch' href='//cdn.jsdelivr.net' />        <link rel='dns-prefetch' href='//youtube.com' />        <link rel='dns-prefetch' href='//tags.bkrtx.com' />        <link rel='dns-prefetch' href='//redirect.prod.experiment.routing.cloudfront.aws.a2z.com' />        <link rel='dns-prefetch' href='//stags.bluekai.com' />        <link rel='dns-prefetch' href='//google.com' />        <link rel='dns-prefetch' href='//adtracker.ch' />        <link rel='dns-prefetch' href='//hal900016.redintelligence.net' />        <link rel='dns-prefetch' href='//hal9000.redintelligence.net' />        <link rel='dns-prefetch' href='//track.adform.net' />        <link rel='dns-prefetch' href='//s1.adform.net' />        <link href='//fonts.gstatic.com' crossorigin rel='preconnect' />          <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>                    
+        <script type="uplazyloadscript" data-rocket-type='text/javascript' src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        
+        <script>var site_base = '/';var base_url = 'https://www.urdupoint.com/'; var base_daily = 'https://www.urdupoint.com/daily/'; var base_cdn = 'https://cdn.urdupoint.com/';</script> 
+        
+                                                                 <title>Tairhvin Kursi تیرھویں کرسی - Urdu Story and Article for Kids</title>        <meta name="keywords" content="">        <meta name="description" content="Read Tairhvin Kursi (Article No. 800) and other interesting Urdu Stories, Urdu Kids Articles and Urdu Mazamin. Children Moral stories and Stories with lessons for kids.">                <meta property="og:url" content="https://www.urdupoint.com/kids/detail/moral-stories/tairhvin-kursi-800.html" />        <meta property="og:title" content="Tairhvin Kursi تیرھویں کرسی - Urdu Story and Article for Kids" />        <meta property="og:description" content="Read Tairhvin Kursi (Article No. 800) and other interesting Urdu Stories, Urdu Kids Articles and Urdu Mazamin. Children Moral stories and Stories with lessons for kids." />        <meta property="og:site_name" content="UrduPoint" />        <meta property="og:image" content="https://photo-cdn.urdupoint.com/show_img_new/kids/kids_article_images/2015/740x404/1431414058_icon.jpg._2" />        <meta property="og:image:url" content="https://photo-cdn.urdupoint.com/show_img_new/kids/kids_article_images/2015/740x404/1431414058_icon.jpg._2" />        <meta property="og:image:type" content="image/jpeg" />        <meta property="og:image:width" content="740" />        <meta property="og:image:height" content="404" />                <meta property="og:type" content="article" />                        <meta property="og:locale" content="en_US" />                                <meta name="twitter:card" content="summary_large_image">        <meta name="twitter:site" content="@DailyUrduPoint">        <meta name="twitter:title" content="Tairhvin Kursi تیرھویں کرسی - Urdu Story and Article for Kids">        <meta name="twitter:description" content="Read Tairhvin Kursi (Article No. 800) and other interesting Urdu Stories, Urdu Kids Articles and Urdu Mazamin. Children Moral stories and Stories with lessons for kids.">        <meta name="twitter:creator" content="@DailyUrduPoint">        <meta name="twitter:image" content="https://photo-cdn.urdupoint.com/show_img_new/kids/kids_article_images/2015/740x404/1431414058_icon.jpg._2">        <meta name="twitter:image:alt" content="Tairhvin Kursi تیرھویں کرسی - Urdu Story and Article for Kids" />        <meta name="twitter:domain" content="urdupoint.com">                <link rel="canonical" href="https://www.urdupoint.com/kids/detail/moral-stories/tairhvin-kursi-800.html">                         
+        <script type="application/ld+json">{"@context": "http://schema.org","@type": "Organization","url": "http://www.urdupoint.com/","logo": "https://photo-cdn.urdupoint.com/daily/images/Logos/14yearpng.png","sameAs": ["https://www.facebook.com/urdupoint.network","https://twitter.com/DailyUrduPoint","","https://www.pinterest.com/urdupoint/","http://www.linkedin.com/company/pakistanpoint-com/","https://www.youtube.com/c/urdupointcomofficial","https://www.instagram.com/urdupoint_com/"],"contactPoint": [{"@type": "ContactPoint","telephone": "+92-042-1220-69696","contactType": "customer service","areaServed": "PK"},{"@type": "ContactPoint","telephone": "+92.42 353 17.001","contactType": "customer service"},{"@type": "ContactPoint","telephone": "+92.42 353 17.002","contactType": "customer service"},{"@type": "ContactPoint","telephone": "+92.42 353 17.003","contactType": "customer service"},{"@type": "ContactPoint","telephone": "+92.42 353 17.004","contactType": "customer service"}]}</script><script type="application/ld+json">{"@context": "http://schema.org","@type": "WebSite","name": "UrduPoint","alternateName": "PakistanPoint","url": "https://www.urdupoint.com/"}</script><script data-schema="WebPage" type="application/ld+json">{"@id":"https://www.urdupoint.com/kids/detail/moral-stories/tairhvin-kursi-800.html#webpage","@type":"WebPage","@context":"http://schema.org"}</script>
+        
+                
+                
+                        <style type="text/css">a,abbr,acronym,address,applet,article,aside,audio,b,big,blockquote,body,canvas,caption,center,cite,code,dd,del,details,dfn,div,dl,dt,em,embed,fieldset,figcaption,figure,footer,form,h1,h2,h3,h4,h5,h6,header,hgroup,html,i,iframe,img,ins,kbd,label,legend,li,mark,menu,nav,object,ol,output,p,pre,q,ruby,s,samp,section,small,span,strike,strong,sub,summary,sup,table,tbody,td,tfoot,th,thead,time,tr,tt,u,ul,var,video{margin:0;padding:0;border:0;font:inherit;vertical-align:baseline; outline: 0; background: transparent;} article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:after,blockquote:before,q:after,q:before{content:'';content:none}table{border-collapse:collapse;border-spacing:0}.clear{ clear:both; line-height:0px; margin:0; padding:0;}*{ box-sizing:border-box; transition-duration:.2s;}::selection {background-color: #394F78; color:#fff;}body{font-family:'Roboto', sans-serif; font-size:16px; line-height:26px; background:#f6f6f6; }.english, .en, .arial{font-family:'Roboto', sans-serif;}    #main_wrap{ position:relative; width:100%; float:left;}p,h1,h2,h3,h4,h5,h6{margin-bottom: 20px; color:#101010;}h1,h2,h3,h4,h5,h6{font-weight:700;}.nobl{ border-left:none;}a{color: #006598; text-decoration:none;}a:hover{ color:#c00; }p{ font-size: 16px;line-height: 26px;}h1{ font-size: 34px;line-height: 44px;}h2{ font-size: 28px;line-height: 38px;}h3{ font-size: 26px;line-height: 36px;}h4{ font-size: 24px;line-height: 34px;}h5{ font-size: 22px;line-height: 32px;}h6{ font-size: 20px;line-height: 30px;}strong{ font-size:inherit; font-weight:bold;}@media(max-width:600px){    p{ font-size: 15px;line-height: 24px;}    h1{ font-size: 28px;line-height: 38px;}    h2{ font-size: 24px;line-height: 34px;}    h3{ font-size: 22px;line-height: 32px;}    h4{ font-size: 20px;line-height: 30px;}    h5{ font-size: 18px;line-height: 28px;}    h6{ font-size: 16px;line-height: 26px;}}iframe,img{max-width:100%;}.round{border-radius:10%;-moz-border-radius:10%;-webkit-border-radius:10%;-ms-border-radius:10%;}hr{overflow:auto;border-top-width:thin;border-top-style:solid;border-top-color:#ccc;margin-top:2px;margin-bottom:2px;}  .border_line{border-bottom: 1px dotted #D9D9D9;clear: both;height: 10px;margin: 10px;}.container{display: block;width: 1080px;margin: 0px auto;position: relative;}.main_bar{ width: 760px;float: left;position: relative;}.side_bar{ width: 300px;float: right;max-width: 100%;}@media(max-width:1100px){.container{width: 100%;padding: 0 10px;}    .main_bar{ width:100%; margin-bottom:15px;}    .side_bar{ width:100%;}}header{width: 100%;background: #fff;position: fixed;z-index: 99999; border: none!important;box-shadow: 0 3px 6px 0 rgba(140,152,164,.25)!important;height: 50px; top:0;}header .logo_wrap{float: left;width: 120px;height: 50px;line-height: 50px;}header #nav_wrap{float: left;width: calc(100% - 130px);}header .search_wrap{float: right;width: 15%;padding: 7px 0;}#search_wrap{ position: absolute;display: initial;width: 100%;height: 50px;top: -100px;left: 0;right: 0;bottom: 0;z-index: 9999999;cursor: pointer;transition-duration: 300ms;transition-property: top, bottom;}.search_inner{text-align: center;}.search_close{color: #fff;padding: 12px 18px;position: absolute;right: 0;top: 0;font-size: 25px;background: #505050;}.search_close i{ font-size:20px;}.search_inner input[type="text"]{color: #fff;font-size: 20px;outline: none;height: 50px;line-height: 50px;width: 100%;border: none;padding: 0 80px 0 15px; background:#2C8FCB;}.search_inner input[type="text"]::placeholder {color: #fff;}header .logo_wrap img.logo{ vertical-align: middle;} header #nav_wrap ul.main_nav{ float:left; width:100%;}header #nav_wrap ul.main_nav li{ float: left; position:relative;}header #nav_wrap ul.main_nav li a{float: left;height: 50px;line-height: 50px;padding: 0 6px;color: #121a21;font-size: 14px; font-weight:bold;}header #nav_wrap ul.main_nav li:hover > a{ background:#2C8FCB; color:#fff;}header #nav_wrap ul.main_nav li>ul{ display:none; position: absolute;left: 0;top: 50px;background: #F6F7F9;min-width: 220px;box-shadow: 0 3px 6px 0 rgba(140,152,164,.25)!important;}header #nav_wrap ul.main_nav li>ul li{ float:left; width:100%; border-bottom: solid 1px #ccc;}header #nav_wrap ul.main_nav li>ul li a{float: left;width: 100%;padding: 5px 10px;font-size: 14px;line-height: 20px;height: auto;font-weight: normal;}header #nav_wrap ul.main_nav li:hover > ul{ display:block;}header .btnsearch {float: right;padding: 12px 12px;width: 50px;text-align: center; cursor:pointer;}header .btnsearch i{color: #2C8FCB; font-size:18px;} header .btnsearch:hover{background: #2C8FCB;}header .btnsearch:hover i{ color:#fff;}header .menu_hndlr{ display:none;position:absolute; left:0; top:0; padding: 12px 20px; cursor:pointer;}header .menu_hndlr i{color:#121a21; font-size:20px;}@media(max-width:1100px){    header .logo_wrap{ width:100%; text-align:center !important;}header .btnsearch{ position:absolute; right:0; top:0;}header .menu_hndlr{ display:block;}header #nav_wrap{display: initial;position: fixed;width: 250px;background: #fff;top: 50px;left: -271px;height: 100%;overflow-y: auto;box-shadow: 5px 0 12px rgba(18,26,33,.1);padding-bottom: 50px;z-index: 999999;transition-duration: 300ms;transition-property: left, right;padding-bottom: 50px;}header #nav_wrap ul.main_nav li {width: 100%;border-bottom: 1px solid #ccc;}header #nav_wrap ul.main_nav li a{ padding: 8px;float: left;width: 100%;font-size: 15px;font-weight: normal;line-height: 23px;height: auto;}header #nav_wrap ul.main_nav li>ul{ display:inline-block; width:100%;  position: static;}header #nav_wrap ul.main_nav li>ul li{padding-left:15px;}header #nav_wrap ul.main_nav li>ul li:last-child{ border-bottom:none;}}header .show_mob_menu{ left: 0 !important;}.urdu_wrap .logo_wrap{ float:right; text-align:right;}.urdu_wrap header #nav_wrap{text-align: right; float:right;}.urdu_wrap header #nav_wrap ul.main_nav{}.urdu_wrap header #nav_wrap ul.main_nav li {float: right;}.urdu_wrap header #nav_wrap ul.main_nav li a {text-align: right;direction: rtl;FONT-FAMILY: "nastliq", sans-serif;}.kwd{color:#f74d4d;}.tagcloud{ display:block;}.tagcloud a{background: #f0f0f0;color: #232323;padding: 8px 10px;font-size: 13px;margin: 0 0 4px 2px; display: inline-block; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;}.tagcloud a:hover{ background:#222; color:#fff;}.header_gap{ margin-top:65px;}footer{background-color: #0a0d14; float: left;width: 100%;z-index: 1;position: relative; padding-top:15px;}footer .ftr_info_box{width: 40%;float: left;}footer .ftr_info_box p{ font-size:13px; line-height:20px; color:#949cb0;}footer .ftr_link_box{ float:left; width:18%; margin:1%;}footer .ftr_link_box h3{ font-size:16px; line-height:26px; color:#fff; margin-bottom:15px;}footer .ftr_link_box a{display: block;width: 100%;color: #fff;font-size: 14px;line-height: 24px;margin-bottom: 10px;}.ftr_social_box{ width:100%;}.ftr_social_box a{display: inline-block;width: 35px;height: 35px;text-align: center;background: #222;border-radius: 50%;line-height: 30px;margin: 4px 2px; margin-top: 20px;}.ftr_social_box a i{ font-size: 16px;line-height: 35px;color: #fff;}.ftr_social_box a.fsb_facebook{ background:#0071F3;}.ftr_social_box a.fsb_twitter{background:#31C6F7; }.ftr_social_box a.fsb_youtube{background:#F70000;}.ftr_social_box a.fsb_pinterest{background:#C62026;}.ftr_social_box a.fsb_linkedin{ background:#0077B0;}.ftr_social_box a.fsb_rss{ background:#F78900;}.ftr_social_box a.fsb_instagram{ background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);}.ftr_social_box a:hover{ background:#ef5323; color:#fff;}footer .ftr_bottom{background-color: #06090f;     padding: 10px 0; margin-top:10px;}footer .ftr_bottom p{color: #949cb0; font-size:13px; line-height:22px;     margin-bottom: 0;}@media(max-width:800px){footer .ftr_info_box{ width: 100%;margin-bottom: 15px;padding-bottom: 15px;border-bottom: solid 1px #2d323f; text-align:center;}footer .ftr_link_box{ width:31.33%;}}@media(max-width:360px){footer .ftr_link_box{ width:100%; margin:0 0 15px 0;}}/*breadscrumb english css start*/ul.bread_crumb_en{margin: 0 0 5px 0;width: 100%;box-sizing: border-box;float: left;}ul.bread_crumb_en li{float: left;margin: 6px;}ul.bread_crumb_en li i{font-size: 12px;line-height: 22px;margin: 0;color: #0B5A9D;vertical-align: middle;display: block;}ul.bread_crumb_en li a{font-family: 'Roboto', sans-serif;font-size: 12px;line-height: 22px;display: block;}/*=================*//*breadscrumb urdu css start*/ul.bread_crumb_ur{margin: 0 0 5px 0;width: 100%;box-sizing: border-box;float: right;}ul.bread_crumb_ur li{float: right;margin: 6px;}ul.bread_crumb_ur li i{font-size: 13px;line-height: 26px;margin: 0;color: #0B5A9D;vertical-align: middle;display: block;}ul.bread_crumb_ur li a{font-family: "nastliq", sans-serif;font-size: 13px;line-height: 26px;display: block;}/*=================*/.shad_box {width: 100%;padding: 10px;box-shadow: 0 1px 4px rgb(0 0 0 / 16%);-moz-box-shadow: 0 1px 4px rgba(0,0,0,0.16);-webkit-box-shadow: 0 1px 4px rgb(0 0 0 / 16%);box-sizing: border-box;background: #fff;margin-bottom:20px;}.shad_box p:last-child{ margin-bottom:0;}#ScrollToTop {display: none;position: fixed;bottom: 52px;right: 30px;z-index: 99;font-size: 18px;border: none;outline: none;background-color: #121b2d;color: white;cursor: pointer;border-radius: 50%;width: 40px;height: 40px;text-align: center;line-height: 35px;vertical-align: middle;}#ScrollToTop:hover {background-color: #2C8FCB;}.smore_links{ float:left; margin-top:15px; margin-bottom:15px; color:#fff; border-top: solid 1px #2d323f; padding-top:15px; }.smore_links strong{ color:#d9e4ff; font-size:13px;}.smore_links a{font-size: 12px;line-height: 20px;color: #949cb0;}.phead{font-weight:bold; font-size:20px; line-height:28px; margin-bottom:10px;}.fwn{ font-weight:normal !important;}.fwb{ font-weight:bold !important;}.fs10{font-size:10px !important;}.fs11{font-size:11px !important;}.fs12{font-size:12px !important;}.fs13{font-size:13px !important;}.fs14{font-size:14px !important;}.fs15{font-size:15px !important;}.fs16{font-size:16px !important;}.fs17{font-size:17px !important;}.fs18{font-size:18px !important;}.fs19{font-size:19px !important;}.fs20{font-size:20px !important;}.fs21{font-size:21px !important;}.fs22{font-size:22px !important;}.fs23{font-size:23px !important;}.fs24{font-size:24px !important;}.fs25{font-size:25px !important;}.fs26{font-size:26px !important;}.fs27{font-size:27px !important;}.fs28{font-size:28px !important;}.fs29{font-size:29px !important;}.fs30{font-size:30px !important;}.fs31{font-size:31px !important;}.fs32{font-size:32px !important;}.fs33{font-size:33px !important;}.fs34{font-size:34px !important;}.fs35{font-size:35px !important;}.fs36{font-size:36px !important;}.fs37{font-size:37px !important;}.fs38{font-size:38px !important;}.fs39{font-size:39px !important;}.fs40{font-size:40px !important;}.lh12{line-height:12px !important;}.lh13{line-height:13px !important;}.lh14{line-height:14px !important;}.lh15{line-height:15px !important;}.lh16{line-height:16px !important;}.lh17{line-height:17px !important;}.lh18{line-height:18px !important;}.lh19{line-height:19px !important;}.lh20{line-height:20px !important;}.lh22{line-height:22px !important;}.lh24{line-height:24px !important;}.lh26{line-height:26px !important;}.lh28{line-height:28px !important;}.lh30{line-height:30px !important;}.lh32{line-height:32px !important;}.lh34{line-height:34px !important;}.lh36{line-height:36px !important;}.lh38{line-height:38px !important;}.lh40{line-height:40px !important;}.lh42{line-height:42px !important;}.lh44{line-height:44px !important;}.lh46{line-height:46px !important;}.lh48{line-height:48px !important;}.lh50{line-height:50px !important;}.lh52{line-height:52px !important;}.lh54{line-height:54px !important;}.lh56{line-height:56px !important;}.lh58{line-height:58px !important;}.lh60{line-height:60px !important;}.lh62{line-height:62px !important;}.lh64{line-height:64px !important;}.lh66{line-height:66px !important;}.lh68{line-height:68px !important;}.lh70{line-height:70px !important;}.lh72{line-height:72px !important;}.lh74{line-height:74px !important;}.lh76{line-height:76px !important;}.lh78{line-height:78px !important;}.lh80{line-height:80px !important;}.hwa{ height: auto !important; width:auto !important;}.nomar{margin:0 !important;}.mar2{ margin:2px !important;}.mar5{ margin:5px !important;}.mar8{ margin:8px !important;}.mar10{ margin:10px !important;}.mar15{ margin:15px !important;}.mar20{ margin:20px !important;}.mar25{ margin:25px !important;}.mar30{ margin:30px !important;}.mt0{margin-top:0px !important;}.mt2{margin-top:5px !important;}.mt5{margin-top:5px !important;}.mt8{margin-top:8px !important;}.mt10{margin-top:10px !important;}.mt15{margin-top:15px !important;}.mt20{margin-top:20px !important;}.mt25{margin-top:25px !important;}.mt30{margin-top:30px !important;}.mta{ margin-top:auto !important;}.mb0{margin-bottom:0px !important;}.mb1{margin-bottom:1px !important;}.mb2{margin-bottom:2px !important;}.mb5{margin-bottom:5px !important;}.mb8{margin-bottom:8px !important;}.mb10{margin-bottom:10px !important;}.mb15{margin-bottom:15px !important;}.mb20{margin-bottom:20px !important;}.mb25{margin-bottom:25px !important;}.mb30{margin-bottom:30px !important;}.mba{ margin-bottom:auto !important;}.ml0{margin-left:0px !important;}.ml2{margin-left:2px !important;}.ml5{margin-left:5px !important;}.ml8{margin-left:8px !important;}.ml10{margin-left:10px !important;}.ml15{margin-left:15px !important;}.ml20{margin-left:20px !important;}.ml25{margin-left:25px !important;}.ml30{margin-left:30px !important;}.mla{ margin-left:auto !important;}.mr0{margin-right:0px !important;}.mr2{margin-right:2px !important;}.mr5{margin-right:5px !important;}.mr8{margin-right:8px !important;}.mr10{margin-right:10px !important;}.mr15{margin-right:15px !important;}.mr20{margin-right:20px !important;}.mr25{margin-right:25px !important;}.mr30{margin-right:30px !important;}.mra{ margin-right:auto !important;}.nopad{padding:0 !important;}.pad0{padding:0px !important;}.pad2{padding:2px !important;}.pad5{padding:5px !important;}.pad8{padding:8px !important;}.pad10{padding:10px !important;}.pad15{padding:15px !important;}.pad20{padding:20px !important;}.pt0{padding-top:0px !important;}.pt2{padding-top:2px !important;}.pt5{padding-top:5px !important;}.pt8{padding-top:8px !important;}.pt10{padding-top:10px !important;}.pt15{padding-top:15px !important;}.pt20{padding-top:20px !important;}.pb0{padding-bottom:0px !important;}.pb2{padding-bottom:2px !important;}.pb5{padding-bottom:5px !important;}.pb8{padding-bottom:8px !important;}.pb10{padding-bottom:10px !important;}.pb15{padding-bottom:15px !important;}.pb20{padding-bottom:20px !important;}.pl0{padding-left:0px !important;}.pl2{padding-left:2px !important;}.pl5{padding-left:5px !important;}.pl8{padding-left:8px !important;}.pl10{padding-left:10px !important;}.pl15{padding-left:15px !important;}.pl20{padding-left:20px !important;}.pr0{padding-right:0px !important;}.pr2{padding-right:2px !important;}.pr5{padding-right:5px !important;}.pr8{padding-right:8px !important;}.pr10{padding-right:10px !important;}.pr15{padding-right:15px !important;}.pr20{padding-right:20px !important;}.full{ width:100% !important;}.half{width:50% !important;}.half_2{ width:48% !important; margin:1% !important;}.dbb_box{border: 1px dotted #B2B2B2;margin-bottom: 20px;padding: 5px; box-sizing:border-box;}.fr{float:right !important;}.fl{float:left !important;}.fn{float:none !important;}.vam{ vertical-align:middle !important;}.vab{ vertical-align:bottom !important;}.vap{ vertical-align:top !important;}.wbba{word-break: break-all !important;}.bsbb{box-sizing:border-box !important;}.db{ display:block !important;}.dib{ display: inline-block !important;}.pad10{ padding:10px;}.pad15{ padding:15px;}.hide {display: none;}.show {display: block;}.hwa{ height: auto !important; width:auto !important;}.csrp{cursor: pointer !important;}.txt_red{ color:#903632 !important;}.txt_green{ color:#063F4F !important;}.txt_suc{ color:#0A660A !important;}.txt_blue{ color:#084888 !important;}.txt_gray{ color:#333 !important;}.txt_white{ color:#fff !important;}.txt_black{ color:#000 !important;}.txt_orange{ color:#82470D  !important;}.ltr{direction:ltr !important;}.rtl{direction:rtl !important;}.al{text-align:left !important;}.ar{text-align:right !important;}.aj{text-align:justify !important;}.ac{text-align:center !important;}.bg_green{background: #006064;}.bg_black{background: #414042;}.bg_gray{background: #595959;}.bg_brown{background: #7A4D00;}.bg_suc{background: #006600;}.bg_err{background: #983834;}.bg_pink{background: #AD1A1D;}.bg_blue{background: #0B5A9D;}.bg_purple{background: #5a065a;}.bg_red{background: #9F3123;}.bg_white{ background:#fff;}.widget{display: block;margin-bottom: 20px; position:relative;}.widget h3{display: block;margin-bottom: 15px;border-top: 5px solid #232323;border-bottom: 1px dotted #b2b2b2;color: #254A7D;font-size: 16px;line-height: 32px;font-weight: normal;}.widget ul.widget_list{ display:block;}.widget ul.widget_list li{display: table;margin-bottom: 10px;padding-bottom: 5px;border-bottom: 1px dotted #b2b2b2;width: 100%;}.widget ul.widget_list li a{font-size: 15px;line-height: 22px;}.widget ul.widget_list li img{margin: 0 5px 10px 0;float: left; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;}.widget ul.widget_list li:last-child{ border-bottom:none;}.widget ul.widget_list li div.date_line{ color: #666;font-size: 11px;margin-top: 5px;}.widget ul.widget_list li.slc_news{border: solid 1px #000;padding: 5px;box-sizing: border-box;}/*responsive table*/.resp_table {width: 100%; margin:0 auto 20px auto;}.resp_table tr {border-collapse: collapse; }.resp_table tr:last-child{ border-bottom:none;}.resp_table th, .resp_table td { padding:10px; font-size: 16px;text-align: left;line-height: 26px;vertical-align: middle; border: 1px solid #eeeeeed6;}.resp_table th{ font-weight: bold;}.resp_table tr:nth-child(odd) {background: #f4f4f49c;}.resp_table td{word-break: break-all;}.resp_table thead th{ color:#fff; background:#121b2d;}/*==========================*//*responsive table block*/.responsive-card-table {background: white;border-collapse: collapse;padding: 5px;width: 100%;box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);animation: float 5s infinite;margin-bottom:15px;}.responsive-card-table.unstriped tbody {background-color: transparent;}.responsive-card-table th {color: #fff;background: #4c4c4c;border-right: 1px solid #222 !important;font-size: 16px;padding: 10px;text-align: left;vertical-align: middle;}.responsive-card-table td {background: #FFFFFF;padding: 10px;text-align: left;vertical-align: middle;font-size: 14px;border-right: 1px solid #C1C3D1;}.responsive-card-table tr:nth-child(odd) td {background: #ebebeb63;}.responsive-card-table tr, .responsive-card-table th, .responsive-card-table td {border: 1px solid #d6d6d6;}@media screen and (max-width: 640px) {.responsive-card-table {}.responsive-card-table thead tr {position: absolute;top: -9999em;left: -9999em;}.responsive-card-table tr {border: 1px solid #d6d6d6;display: block;}.responsive-card-table tr + tr {margin-top: 1.5rem;}.responsive-card-table td {border: none;display: -webkit-flex;display: -ms-flexbox;display: flex;-webkit-justify-content: flex-start;-ms-flex-pack: start;justify-content: flex-start;-webkit-align-items: center;-ms-flex-align: center;align-items: center;border-bottom: 1px solid #d6d6d6;padding-left: 50%;position: relative;}.responsive-card-table td:before {content: attr(data-label);display: inline-block;font-weight: bold;line-height: 1.5;margin-left: -100%;width: 100%;position: relative;z-index: 1;color:#fff;}.responsive-card-table td:after {content: '';position: absolute;background: #4c4c4c;color:#fff;width: 45%;height: 95%;left: 1px;top: 1px;z-index: 0;}}.resp_ur_tbl{ direction:rtl;}@media screen and (max-width: 640px){.resp_ur_tbl{ direction:ltr;}}/*==========================*/.social_sharer {width: 100%;box-sizing: border-box;text-align: center;}.social_sharer .ss_btn{box-shadow: inset 0 -4px 0 rgba(0,0,0,.15);border-radius: 3px;-webkit-border-radius: 3px;-webkit-box-shadow: inset 0 -4px 0 rgba(0,0,0,.2);color: #fff;padding: 10px;display: inline-block;font-size: 13px; cursor:pointer;}.social_sharer .ss_btn i{margin-right: 5px;font-size: 18px; vertical-align: middle;}.social_sharer .ss_btn.facebook{ background:#3a579a;}.social_sharer .ss_btn.twitter{ background:#005B85;}.social_sharer .ss_btn.reddit{ background:#D63C1A;}.social_sharer .ss_btn.pinterest{ background:#cd1c1f;}.social_sharer .ss_btn.whatsapp{ background:#296327;}@media(max-width:600px){.social_sharer  .ss_btn{ text-align:center; padding:10px 15px;}.social_sharer  .ss_btn span{ display:none;}.social_sharer  .ss_btn i{ margin:0px;}}ul.pagination{margin: 20px 0; float: left; width: 100%; text-align: center; direction: ltr;}ul.pagination li{list-style-type: none; float: none; display: inline-block; margin: 4px;}ul.pagination li a{font-weight: 500;font-size: 14px;color: #000;padding: 6px 12px;text-decoration: none;background-color: #EEEEEE;border-radius: 4px;-moz-border-radius: 4px;-webkit-border-radius: 4px;display: inline-block;}ul.pagination li li>a:focus,ul.pagination li>a:hover,ul.pagination li >span:focus,ul.pagination li>span:hover,ul.pagination li>a:focus,ul.pagination li>a:hover,ul.pagination li>span:focus,ul.pagination li>span:hover{color:#fff!important;background:#2C8FCB!important}ul.pagination>.active>a,ul.pagination>.active>a:focus,ul.pagination>.active>a:hover,ul.pagination>.active>span,ul.pagination>.active>span:focus,ul.pagination>.active>span:hover{color:#fff!important;background-color:#2C8FCB!important;}.head1{border-top: solid 4px #222;padding-top: 10px;border-bottom: dotted 1px #666;padding-bottom: 5px;}.heade2{border-left: 5px solid #222;padding-left: 10px;}.center_desktop{ float:left; margin-right:15px; margin-bottom:10px;}#eng_mob_ad_wrap{ display:none;}@media(max-width:600px){#eng_mob_ad_wrap{ display:block;}}.sb_menu_item {  position: relative;}.sb_menu_item a {  text-decoration: none;}.sb_menu_item .sb_main_link, .sb_menu_item [data-toggle="dropdown"] {display: block;color: white;background: #C0392B;-moz-box-shadow: 0 1px 0 #d65548 inset, 0 -1px 0 #962d22 inset;-webkit-box-shadow: 0 1px 0 #d65548 inset, 0 -1px 0 #962d22 inset;box-shadow: 0 1px 0 #d65548 inset, 0 -1px 0 #962d22 inset;text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);padding: 10px;}.sb_menu_item .sb_main_link:hover, .sb_menu_item [data-toggle="dropdown"]:hover {  background: #cd3d2e;}.sb_menu_item [data-toggle="dropdown"]:before {position: absolute;display: block;content: '\25BC';font-size: 0.7em;color: #fff;top: 13px;left: 10px;-moz-transform: rotate(0deg);-ms-transform: rotate(0deg);-webkit-transform: rotate(0deg);transform: rotate(0deg);-moz-transition: -moz-transform 0.6s;-o-transition: -o-transform 0.6s;-webkit-transition: -webkit-transform 0.6s;transition: transform 0.6s;}.sb_menu_item > .dropdown-menu {max-height: 0;overflow: hidden;list-style: none;padding: 0;margin: 0;-moz-transform: scaleY(0);-ms-transform: scaleY(0);-webkit-transform: scaleY(0);transform: scaleY(0);-moz-transform-origin: 50% 0%;-ms-transform-origin: 50% 0%;-webkit-transform-origin: 50% 0%;transform-origin: 50% 0%;-moz-transition: max-height 0.6s ease-out;-o-transition: max-height 0.6s ease-out;-webkit-transition: max-height 0.6s ease-out;transition: max-height 0.6s ease-out;animation: hideAnimation 0.4s ease-out;-moz-animation: hideAnimation 0.4s ease-out;-webkit-animation: hideAnimation 0.4s ease-out;}.sb_menu_item > .dropdown-menu li {  padding: 0;}.sb_menu_item > .dropdown-menu li a {display: block;color: #6f6f6f;background: #EEE;-moz-box-shadow: 0 1px 0 white inset, 0 -1px 0 #d5d5d5 inset;-webkit-box-shadow: 0 1px 0 white inset, 0 -1px 0 #d5d5d5 inset;box-shadow: 0 1px 0 white inset, 0 -1px 0 #d5d5d5 inset;text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.3);padding: 10px 10px;}.sb_menu_item > .dropdown-menu li a:hover {background: #f6f6f6;}.sb_menu_item > input[type="checkbox"] {opacity: 0;display: block;position: absolute;top: 0;width: 100%;height: 100%;cursor: pointer;}.sb_menu_item > input[type="checkbox"]:checked ~ .dropdown-menu {max-height: 9999px;display: block;-moz-transform: scaleY(1);-ms-transform: scaleY(1);-webkit-transform: scaleY(1);transform: scaleY(1);animation: showAnimation 0.5s ease-in-out;-moz-animation: showAnimation 0.5s ease-in-out;-webkit-animation: showAnimation 0.5s ease-in-out;-moz-transition: max-height 2s ease-in-out;-o-transition: max-height 2s ease-in-out;-webkit-transition: max-height 2s ease-in-out;transition: max-height 2s ease-in-out;}.sb_menu_item > input[type="checkbox"]:checked + a[data-toggle="dropdown"]:before {-moz-transform: rotate(-180deg);-ms-transform: rotate(-180deg);-webkit-transform: rotate(-180deg);transform: rotate(-180deg);-moz-transition: -moz-transform 0.6s;-o-transition: -o-transform 0.6s;-webkit-transition: -webkit-transform 0.6s;transition: transform 0.6s;}@keyframes showAnimation {0% {-moz-transform: scaleY(0.1);-ms-transform: scaleY(0.1);-webkit-transform: scaleY(0.1);transform: scaleY(0.1);}40% {-moz-transform: scaleY(1.04);-ms-transform: scaleY(1.04);-webkit-transform: scaleY(1.04);transform: scaleY(1.04);}60% {-moz-transform: scaleY(0.98);-ms-transform: scaleY(0.98);-webkit-transform: scaleY(0.98);transform: scaleY(0.98);}80% {-moz-transform: scaleY(1.04);-ms-transform: scaleY(1.04);-webkit-transform: scaleY(1.04);transform: scaleY(1.04);}100% {-moz-transform: scaleY(0.98);-ms-transform: scaleY(0.98);-webkit-transform: scaleY(0.98);transform: scaleY(0.98);}80% {-moz-transform: scaleY(1.02);-ms-transform: scaleY(1.02);-webkit-transform: scaleY(1.02);transform: scaleY(1.02);}100% {-moz-transform: scaleY(1);-ms-transform: scaleY(1);-webkit-transform: scaleY(1);transform: scaleY(1);}}@-moz-keyframes showAnimation {0% {-moz-transform: scaleY(0.1);-ms-transform: scaleY(0.1);-webkit-transform: scaleY(0.1);transform: scaleY(0.1);}40% {-moz-transform: scaleY(1.04);-ms-transform: scaleY(1.04);-webkit-transform: scaleY(1.04);transform: scaleY(1.04);}60% {-moz-transform: scaleY(0.98);-ms-transform: scaleY(0.98);-webkit-transform: scaleY(0.98);transform: scaleY(0.98);}80% {-moz-transform: scaleY(1.04);-ms-transform: scaleY(1.04);-webkit-transform: scaleY(1.04);transform: scaleY(1.04);}100% {-moz-transform: scaleY(0.98);-ms-transform: scaleY(0.98);-webkit-transform: scaleY(0.98);transform: scaleY(0.98);}80% {-moz-transform: scaleY(1.02);-ms-transform: scaleY(1.02);-webkit-transform: scaleY(1.02);transform: scaleY(1.02);}100% {-moz-transform: scaleY(1);-ms-transform: scaleY(1);-webkit-transform: scaleY(1);transform: scaleY(1);}}@-webkit-keyframes showAnimation {0% {-moz-transform: scaleY(0.1);-ms-transform: scaleY(0.1);-webkit-transform: scaleY(0.1);transform: scaleY(0.1);}40% {-moz-transform: scaleY(1.04);-ms-transform: scaleY(1.04);-webkit-transform: scaleY(1.04);transform: scaleY(1.04);}60% {-moz-transform: scaleY(0.98);-ms-transform: scaleY(0.98);-webkit-transform: scaleY(0.98);transform: scaleY(0.98);}80% {-moz-transform: scaleY(1.04);-ms-transform: scaleY(1.04);-webkit-transform: scaleY(1.04);transform: scaleY(1.04);}100% {-moz-transform: scaleY(0.98);-ms-transform: scaleY(0.98);-webkit-transform: scaleY(0.98);transform: scaleY(0.98);}80% {-moz-transform: scaleY(1.02);-ms-transform: scaleY(1.02);-webkit-transform: scaleY(1.02);transform: scaleY(1.02);}100% {-moz-transform: scaleY(1);-ms-transform: scaleY(1);-webkit-transform: scaleY(1);transform: scaleY(1);}}@keyframes hideAnimation {0% {-moz-transform: scaleY(1);-ms-transform: scaleY(1);-webkit-transform: scaleY(1);transform: scaleY(1);}60% {-moz-transform: scaleY(0.98);-ms-transform: scaleY(0.98);-webkit-transform: scaleY(0.98);transform: scaleY(0.98);}80% {-moz-transform: scaleY(1.02);-ms-transform: scaleY(1.02);-webkit-transform: scaleY(1.02);transform: scaleY(1.02);}100% {-moz-transform: scaleY(0);-ms-transform: scaleY(0);-webkit-transform: scaleY(0);transform: scaleY(0);}}@-moz-keyframes hideAnimation {0% {-moz-transform: scaleY(1);-ms-transform: scaleY(1);-webkit-transform: scaleY(1);transform: scaleY(1);}60% {-moz-transform: scaleY(0.98);-ms-transform: scaleY(0.98);-webkit-transform: scaleY(0.98);transform: scaleY(0.98);}80% {-moz-transform: scaleY(1.02);-ms-transform: scaleY(1.02);-webkit-transform: scaleY(1.02);transform: scaleY(1.02);}100% {-moz-transform: scaleY(0);-ms-transform: scaleY(0);-webkit-transform: scaleY(0);transform: scaleY(0);}}@-webkit-keyframes hideAnimation {0% {-moz-transform: scaleY(1);-ms-transform: scaleY(1);-webkit-transform: scaleY(1);transform: scaleY(1);}60% {-moz-transform: scaleY(0.98);-ms-transform: scaleY(0.98);-webkit-transform: scaleY(0.98);transform: scaleY(0.98);}80% {-moz-transform: scaleY(1.02);-ms-transform: scaleY(1.02);-webkit-transform: scaleY(1.02);transform: scaleY(1.02);}100% {-moz-transform: scaleY(0);-ms-transform: scaleY(0);-webkit-transform: scaleY(0);transform: scaleY(0);}}.sub_menu_en .sb_menu_item [data-toggle="dropdown"]:before{ right:10px !important; left: auto !important;}/*rating plugin css start*/.rating {display: none;font-size: 25px;line-height: 25px;font-weight: bold;color: #fb9528;white-space: nowrap;cursor: pointer; }.rating .star {display: inline-block;position: relative;letter-spacing: 0.05em; }.rating .star::before {display: inline-block;color: #aaa;content: '☆';width: 1em;height: 1em; }.rating .star::after {display: inline-block;position: absolute;content: '★';top: 0;left: 0;opacity: 0;width: 0;height: 0;transition: all 0.1s linear;overflow: hidden; }.rating:not([disabled]) .star:hover::after,.rating .star.active::after {opacity: 1;width: 1em;height: 1em; }.rating .star.active.half::after {width: 0.5em; }/*=================*/.modal{display: none;position: fixed;z-index: 999999999 !important;padding-top: 80px;left: 0;top: 0;width: 100%;height: 100%;overflow: auto;background-color: rgba(0, 0, 0, 0.8);}.modal-content{background: #fff;margin: auto;padding: 10px;border: 10px solid #ccc;width: 60%;border-radius: 3px 3px 3px 3px;-moz-border-radius: 3px 3px 3px 3px;-webkit-border-radius: 3px 3px 3px 3px;-o-border-radius: 10px;position: relative; box-sizing: border-box;}.close{position: absolute;top: -25px;right: -20px;font-size: 14px;line-height: 20px;width: 20px;height: 20px;border-radius: 50%;-moz-border-radius: 50%;-webkit-border-radius: 50%;-o-border-radius: 50%;background: #000;text-align: center;color: #fff;border: 1px #fff solid;font-weight: normal;cursor: pointer;}.hide_desk{ display:none;}@media(max-width:600px){.hide_desk{ display:block;} .hide_mob{ display:none;}}@media(max-width:600px){.ad_stick_wrap{height:600px; width:100%; background:#eff0f2; border-style: solid; border-width: 1px; border-color: #d6d7d8;}.ad_stick_inner{position: -webkit-sticky; position: sticky;top: 60px;}}.stick_pos{position: -webkit-sticky; position: sticky;top: 0px; z-index:99999;}/*To target Internet Explorer 8, 9, 10 and 11*/@media screen\0 {.stick_pos{ position:fixed;}}/*To target Internet Explorer 6 and 7*/@media screen\9 {.stick_pos{ position:fixed;}}.last_banner_stick{ position:fixed; top:0; z-index:99999;}#breaking_box_wrap{width: 75%;margin: 0 auto;}@media(max-width:800px){#breaking_box_wrap{width: 100%;}}.breaking_box{ border: solid 5px #d83c3c; background:#3e3e3e;border-radius: 10px;padding: 0 6px 6px 0;}.breaking_box .bn_tag{background: #d83c3c;padding: 2px 5px;border-radius: 0px 0 10px 0;}.breaking_box .bn_img{ float: right;border-radius: 10px;margin: 6px 0px 0px 10px;}.read-more-state {  display: none;}.read-more-target {  opacity: 0;  max-height: 0;  font-size: 0;  transition: .25s ease;}.read-more-state:checked ~ .read-more-wrap .read-more-target {  opacity: 1;  font-size: inherit;  max-height: 999em;}.read-more-state ~ .read-more-trigger:before {  content: 'Read More';}.read-more-state:checked ~ .read-more-trigger:before {  content: 'Read less';}.read-more-trigger {  cursor: pointer;display: inline-block;padding: 0 .5em;color: #222;font-size: .9em;line-height: 2;border: 1px solid #ccc;border-radius: .25em;background: #e4e4e4;}.items_list{ float: left;width: 100%;}.menu_app_icon{position: absolute;left: 0;padding: 13px 15px; display:none;}.menu_app_icon i{color: #a9a9a9;font-size: 26px;}.onesignal-popover-dialog{font-family:"nastliq", sans-serif !important;text-align:right!important;direction:rtl!important;}#onesignal-bell-container.onesignal-reset.onesignal-bell-container-bottom-right{ right:auto !important; left:0 !important;}#onesignal-bell-container.onesignal-reset .onesignal-bell-launcher.onesignal-bell-launcher-bottom-right{ right:auto !important; left:20px !important;}#onesignal-bell-container.onesignal-reset .onesignal-bell-launcher.onesignal-bell-launcher-bottom-right .onesignal-bell-launcher-button{ right:auto !important; left:0 !important;}@media(max-width:800px){#onesignal-bell-container.onesignal-reset .onesignal-bell-launcher.onesignal-bell-launcher-bottom-right{ bottom:42px !important;}#onesignal-bell-container.onesignal-reset .onesignal-bell-launcher.onesignal-bell-launcher-md .onesignal-bell-launcher-button{width:32px !important; height:32px !important;}}div.brid, div.brid-temp-holder {margin:0 auto !important; float:none !important;}.corona_banner{ text-align:left;}@media(max-width:800px){.corona_banner{ text-align:center; margin-top:10px;}}.tabs{ margin-bottom:30px;}.tabs .tab-item-data{ display: none;color: #444;margin-top: 1px;background: #fff;padding: 15px;border: solid 1px #d8d4d4;}.tabs .tab-item-data.current{ display:block;}.tabs .tabs_list{margin-bottom: -2px;overflow: hidden;}.tabs .tabs_list a{padding: 8px 15px;float: left;-moz-border-radius: 5px 5px 0 0;font-weight: bold;font-size: 14px;text-transform: uppercase;background: #fff;color: #000;border: solid 1px #ccc;}.tabs .tabs_list a.current{ border-top: 2px solid #CE2616;border-bottom: none;}.tabs .tabs_list a i {margin-right: 10px;font-size: 20px;width: 25px;height: 25px;background: #ccc;border-radius: 50%;text-align: center;padding: 5px;color: #fff;}.fix_shr_wig{ position:fixed; left:0; top:24%; width:48px;}.fix_shr_wig a{ display: block;width: 48px;height: 48px;background: #ccc;color: #fff;text-align: center;line-height: 48px;vertical-align: middle;}.fix_shr_wig a i{ font-size: 22px;vertical-align: middle;}.fix_shr_wig a:hover{ width:60px;}.fix_shr_wig a.fsw_facebook{background:#3B5998;}.fix_shr_wig a.fsw_twitter{background:#1DA1F2;}.fix_shr_wig a.fsw_whatsapp{background:#4DC247;}.fix_shr_wig a.fsw_fbmsn{background:#007FFF;}.fix_shr_wig a.fsw_reddit{background:#FE5700;}@media(max-width:800px){.fix_shr_wig{left: auto !important;bottom: 0 !important;height: 48px !important;width: 100% !important;right: auto;top: auto !important;}.fix_shr_wig a{ width:20%; float:left;}#main_wrap{margin-bottom: 48px;}}.qhead_faq{background: #75b0b3 !important;font-size: 16px !important;line-height: 24px !important;font-weight: normal !important;padding: 5px !important;color: #fff !important;}.primaryimage {aspect-ratio: 2/1;}    .primaryimage img {aspect-ratio: 2/1;width: 100%;height: 100%;object-fit: cover;}#FeatImgW {position: relative;max-width: 740px;width: 100%;margin: 0 auto 15px;background: #f7f7f7;padding-top: 54.56%;}#FeatImgW #FeatImg{position: absolute;top: 0;left: 0;width: 100%;height: 100%;display:none;}.cnt_box{ margin: 15px 0;font-family: 'Roboto', sans-serif;font-size: 15px;text-align: left;direction: ltr;line-height: 24px;padding: 10px;width: 100%;box-sizing: border-box;-moz-border-radius: 10px;-o-border-radius: 10px;box-shadow: 0 1px 4px rgba(0,0,0,0.16);-moz-box-shadow: 0 1px 4px rgba(0,0,0,0.16);-webkit-box-shadow: 0 1px 4px rgba(0,0,0,0.16); background:#fff;}.cnt_box p, .cnt_box h1, .cnt_box h2, .cnt_box h3, .cnt_box h4, .cnt_box h5, .cnt_box h6{  margin-bottom:10px;}.cnt_box strong, .cnt_box b, .cnt_box em{ font-weight:bold;}.cnt_box h1, .cnt_box h2, .cnt_box h3, .cnt_box h4, .cnt_box h5, .cnt_box h6 { font-weight:bold; margin: 10px 0;}.cnt_box h2{ font-size:18px !important;}.cnt_box h3{ font-size:17px !important;}.cnt_box h4{ font-size:16px !important;}.cnt_box h5{ font-size:15px !important;}.cnt_box h6{ font-size:14px !important;}.cnt_box h4{ color: #800000;}.cnt_box .faq_head{background: #006064; padding:10px; box-sizing:border-box; color:#fff; font-size:16px !important;}.cnt_box p:last-child{ margin-bottom:0;}.cnt_box i{ font-style:italic;}.cnt_box u{text-decoration:underline;}.cnt_box h4{color: #800000;font-size: 15px;}.cnt_box a{text-decoration: underline !important;color: #11599C;}.cnt_box ol, .cnt_box ul{ padding-left:20px !important; margin-bottom: 10px !important;}.cnt_box ol{list-style: decimal !important;}.cnt_box ul{list-style: disc !important;}.cnt_box .table-responsive{ direction:ltr !important;}.main_univ_score_box{clear: both;}.main_univ_score_box p{border-bottom: 1px solid #dedede;direction: rtl;margin-bottom: 4px;padding-bottom: 4px;text-align: center;width: 100%;}#UrduPoint_Baby_Names_Top_Leaderboard_ATF{height: 250px;line-height: 250px;}#UrduPoint_Baby_Names_Top_Leaderboard_ATF iframe{ vertical-align:middle !important;}#gpt-970-banner-wrap{ width:100% !important; height:250px; line-height:250px; text-align:center !important;}#gpt-970-banner-wrap iframe{ vertical-align:middle !important;}@media(max-width:800px){#gpt-970-banner-wrap{ height: 100px !important; line-height:100px;}}#Side1-banner-wrap{ width:300px !important; height:250px !important; margin:0 auto 15px auto !important; text-align:center;}#Side2-wrap{ width:300px !important; height:250px !important; margin:15px auto 15px auto !important; text-align:center;}.incontent-wrap{ width:300px !important; height:250px !important; margin:15px auto 15px auto !important; text-align:center;}#gpt-center-banner-wrap{ width:300px !important; height:280px !important; line-height: 280px !important; margin:15px auto !important; text-align:center !important;}#gpt-center-banner-wrap iframe{ vertical-align:middle !important;}#gpt-end-banner-wrap{ width:300px !important; height:280px !important; line-height: 280px !important; margin:15px auto !important; text-align:center !important;}#gpt-end-banner-wrap iframe{ vertical-align:middle !important;}#FooterFixed{ position:fixed; bottom:0px; z-index:9999999 !important; background:#fff !important;}#gpt-middle-banner-in{text-align:center; padding-top:15px;padding-bottom:15px; width:100% !important; background-color: #f7f7f7;}#div-gpt-ad-1x1-wrap .orp-player-wrapper { margin:10px  auto !important;}.header_fixed_top {margin-bottom:10px;position: -webkit-sticky;position: sticky;top: 55px;left: 0;width: 100%;z-index: 10;}@media only screen and (min-width: 800px) {.sticky-top-show {align:left; padding-left:20px; auto; width:auto;}} @media only screen and (max-width: 800px) {.sticky-top-show {margin: auto; text-align: center; padding:0px;}} .app_install_wrap{ display:none;}@media(max-width:600px){.app_install_wrap{ width: 100%;top: 0;height: 70px;padding: 10px;background: #1877F2;flex-flow: row wrap;position: fixed;z-index: 99999999;display:flex;}.app_install_wrap .aiw_close{   margin-top: 15px;cursor: pointer;}.app_install_wrap .aiw_icon{margin-right: 8px;margin-left: 8px;}.app_install_wrap .aiw_title{margin-right: 8px;}.app_install_wrap .aiw_title .aiwt_b{ margin-bottom: 0;color: #fff;font-weight: 700;font-size: 20px;line-height: 28px;}.app_install_wrap .aiw_title .aiwt_s{margin-bottom: 0;color: #fff;font-size: 12px;line-height: 18px;}.app_install_wrap .aiw_btn{}.app_install_wrap .aiw_btn .aiwba{background: #fff;color: #1877F2;padding: 5px 14px;font-weight: bold;margin-top: 5px;display: none;}}</style>        <style type="text/css">.link_rmenu{width: 100%;float: right;font-size: 15px;line-height: 22px;padding: 10px;color: #fff;background: #005D8F;font-weight: bold;margin-bottom: 3px;}.link_rmenu:hover{ background:#00314D; color:#fff;}.link_smenu_wrap{display: flex;flex-flow: row wrap;justify-content: space-between;padding: 0;margin: 0 0 8px 0;list-style: none;}.link_smenu{font-size: 13px;line-height: 22px;font-weight: bold;padding: 6px;width: 100%;color: #005D8F;background: #fff;border: solid 1px #005D8F;margin-bottom: 2px;}.link_smenu:hover{ background:#008fd7; color:#fff;}.sjoke_box_wrap{display: flex;flex-flow: row wrap;justify-content: space-between;padding: 0;margin: 0;list-style: none; direction:rtl;}.sjoke_box{width: 48%;padding: 4px;box-shadow: 0 1px 4px rgba(0,0,0,0.16); background:#fff; margin-bottom:10px; position:relative; text-align:center;}.sjoke_box .joke_icon{ font-size:30px;}.sjoke_box .title_ur{ font-size:16px; line-height:32px; margin-bottom:0; text-align:center; color:#063F4F !important; font-weight:bold;}.sjoke_box .title_en{ font-size:14px; line-height:24px; font-weight:bold; margin-bottom:0; text-align:center;}</style>        
+<!-- Quantcast CMP   
+	<!--replace javascript code with this line-->
+	<!-- end quantcast CMP -->
+
+<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-MBVXX7" height="0" width="0" style="display: none; visibility: hidden"></iframe></noscript>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BZ3TQFG068"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-BZ3TQFG068');
+</script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-307140-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-307140-1');
+</script>
+
+
+
+
+
+
+
+
+ <!-- Start GPT Tag -->
+    <script async src='https://securepubads.g.doubleclick.net/tag/js/gpt.js'></script>
+    <script>
+      window.googletag = window.googletag || {cmd: []};
+      googletag.cmd.push(function() {
+        googletag.defineSlot('/21678054/up-v2/center', [[336,280],[300,250]], 'gpt-center-banner')
+                 .addService(googletag.pubads());
+        googletag.defineSlot('/21678054/up-v2/end', [[336,280],[300,250]], 'gpt-end-banner')
+                 .addService(googletag.pubads());
+        googletag.defineSlot('/21678054/up_1x1', [[1,1]], 'div-gpt-ad-1x1')
+                 .addService(googletag.pubads());
+        googletag.defineSlot('/21678054/urdupoint_outstream', [[1,1]], 'div-gpt-ad-outstream')
+                 .addService(googletag.pubads());
+        googletag.defineSlot('/21678054/header_970x250', [[320,50],[320,100],[300,250],[970,250],[970,90],[336,280]], 'gpt-970-banner')
+                 .addService(googletag.pubads());
+        googletag.defineSlot('/21678054/up-v2/side-one', [[300,250],[300,600]], 'Side1-banner')
+                 .addService(googletag.pubads());
+        googletag.defineSlot('/21678054/up-v2/side-second', [[300,250]], 'Side2')
+                 .addService(googletag.pubads());
+        googletag.defineSlot('/21678054/up-v2/sticky-footer', [[320,50],[320,100],[728,90]], 'FooterFixed')
+                 .addService(googletag.pubads());
+        googletag.defineSlot('/21678054/up-v2/sticky-header-top', [[320,50],[320,100],[728,90]], 'HeadTopSticky')
+             .addService(googletag.pubads());
+        googletag.defineSlot('/21678054/up-v2/mobile-middle', [[300,250],[336,280]], 'gpt-middle-banner')
+             .addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.pubads().collapseEmptyDivs();
+        googletag.pubads().setTargeting('site', ['urdu'])
+                          .setTargeting('section', ['kids']);
+        googletag.pubads().setCentering(true);
+        googletag.enableServices();
+      });
+    </script>
+    <!-- End GPT Tag -->
+    
+
+<script>
+var upgj_w = window,
+	upgj_d = document,
+	upgj_e = upgj_d.documentElement,
+	upgj_g = upgj_d.getElementsByTagName('body')[0],
+	upgj_x = upgj_w.innerWidth || upgj_e.clientWidth || upgj_g.clientWidth,
+	upgj_y = upgj_w.innerHeight|| upgj_e.clientHeight|| upgj_g.clientHeight,
+	upgj_protocol = window.location.protocol,
+	upgj_host_name = window.location.hostname,
+	upgj_pathname = window.location.pathname,
+	upgj_queryString = window.location.search,
+	upgj_curent_url = document.URL,
+	upgj_path_list = upgj_pathname.split('/');
+</script><script async src="https://fundingchoicesmessages.google.com/i/pub-8608602506248267?ers=1" nonce="Lif9pIeeCakce-gqrscr0Q"></script><script nonce="Lif9pIeeCakce-gqrscr0Q">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script><style>@font-face{font-family:'nastliq';src:url('https://cdn.urdupoint.com/daily/font-styles/urdupoint.com-webfont.eot');src:url('https://cdn.urdupoint.com/daily/font-styles/urdupoint.com-webfont.eot?#iefix') format('embedded-opentype'),url('https://cdn.urdupoint.com/daily/font-styles/urdupoint.com-webfont.woff') format('woff'),url('https://cdn.urdupoint.com/daily/font-styles/urdupoint.com-webfont.ttf') format('truetype'),url('https://cdn.urdupoint.com/daily/font-styles/urdupoint.com-webfont.svg#NafeesRegular') format('svg');font-display: swap;}.urdu{font-family:'nastliq', sans-serif;}.mainTxt {FONT-SIZE: 16px;COLOR: #000;FONT-FAMILY: "nastliq", sans-serif; LINE-HEIGHT: 32px;}/*urdu menu css start*/.urdu_nav{ text-align:right; direction:rtl; FONT-FAMILY: "nastliq", sans-serif; }.urdu_nav li{ text-align:right; direction:rtl;}.urdu_nav .elm__link i{ margin-right:5px;}.urdu_nav_mob #elmobile, .urdu_nav_mob .m-elm__list, .urdu_nav_mob .m-elm__list li{text-align:right; direction:rtl; FONT-FAMILY: "nastliq", sans-serif; }.urdu_nav_mob .m-elm__link--sub{  border-left:none !important;  border-right: 10px solid #448D00;}/*=====================*/.items_list_ur{ float: right;width: 100%;}.items_list_ur li{ float: right;width: 100%;margin-bottom: 10px;padding-bottom: 10px;border-bottom: 1px dotted #B2B2B2;}.items_list_ur li:last-child{ border-bottom:none;}.items_list_ur li a{float: right;width: 100%;}.items_list_ur li img{float: right;margin-left: 10px;border-radius: 10px;-moz-border-radius: 10px;-webkit-border-radius: 10px;-o-border-radius: 10px;-ms-border-radius: 10px;}.items_list_ur li .title_ur{ text-align:right; direction:rtl; font-family:'nastliq', sans-serif; font-size:18px; line-height:36px; color:#063F4F ;}.items_list_ur li .title_en{ text-align:right; direction:ltr; font-size:15px; line-height:22px; font-family:arial;}.news_article{ display:block;}.news_article figure{ margin-bottom:15px;}.news_article figure img{border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -o-border-radius: 5px;padding: 4px;border: solid 1px #ccc;box-sizing: border-box;}.news_article figure figcaption{font-size: 15px;font-family: 'nastliq', sans-serif;text-align: center;line-height: 24px;}.news_article h1{color: #000080;text-align: justify; font-size:24px; line-height:48px;}.news_article h2{color: #333; font-size:20px; line-height:40px;text-align: justify;}.news_article .detail_txt{ color:#000; font-size:17px; line-height:34px; text-align:justify;}.news_article .detail_txt p, .news_article .detail_txt span, .news_article .detail_txt div{color:#000;}.news_article .detail_txt a{ color:#447294;}.news_article .detail_txt .cnt_banner{ float:right; margin:0 0 2px 6px;}.news_article .up_more_cnt_new{ display:none;}.news_article .gall_box{ margin-bottom: 10px; margin-top:10px;display: block;background: #f7f7f7;border: 1px solid #ebebeb;padding: 10px 15px;}.news_article .gall_box h3{color: #447294;text-align: center;font-size: 16px;line-height: 32px;}.news_article .gall_box .big_item{ text-align:center;}.news_article .gall_box .small_items{ text-align:center;}.news_article .gall_box .small_items a{ display:inline-block;}.news_article a.txt_link{color:#000;}.news_article .twitter-tweet, .news_article .twitter-video,  .news_article .instagram-media, .news_article iframe {margin: 5px auto !important; display: block;}.txt_banner{ float:right; margin-left:15px; margin-bottom:10px;}@media(max-width:600px){.txt_banner{ width:100%; margin:0 0 10px 0; text-align:center;}}.news_article.nartv2, .news_article.nartv2 p{ font-size:17px; line-height:36px;}figure.mid_art{text-align: center;margin-top: 10px;margin-bottom: 10px;padding: 5px;border: solid 1px #ccc;border-radius: 5px; clear:both; display:inline-block; width:100%;}figure.mid_art img{border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;-o-border-radius: 5px;padding: 0;border: none;box-sizing: border-box;margin-bottom: 0px;}figure.mid_art figcaption{font-size: 18px;text-align: center;line-height: 36px;}</style><style type="text/css">
+.art_info_bar {margin-bottom: 15px; margin-top:5px;} 
+.art_info_bar span {display: inline-block;margin-left: 10px;color: #595959;} 
+.art_info_bar span img{border-radius: 50%;vertical-align: middle; margin-left:5px;}
+.txt_detail, .txt_detail p, .txt_detail span{ font-size:17px; line-height:34px; font-family:'nastliq', sans-serif;}
+.sharp_box_wrap{display: flex;flex-flow: row wrap;justify-content: space-between;padding: 0;margin: 0;list-style: none;}
+.sharp_box{width: 32%;padding: 4px;box-shadow: 0 1px 4px rgba(0,0,0,0.16); background:#fff; margin-bottom:15px; position:relative; text-align:center;}
+.sharp_box .title_ur{ font-size:18px; line-height:36px; margin-bottom:0; text-align:center; color:#063F4F !important;}
+.sharp_box .title_en{ font-size:16px; line-height:26px; font-weight:bold; margin-bottom:0; text-align:center;}
+@media(max-width:450px)
+{
+	.sharp_box{ width:48%;}
+	.sharp_box .title_ur{ font-size:16px; line-height:32px;}
+	.sharp_box .title_en{ font-size:14px; line-height:24px;}
+}
+.dur_wrap{display: flex;flex-flow: row wrap;justify-content: center;padding: 0;margin: 0;list-style: none; direction:rtl;}
+.dur_wrap .dur_item{width: calc(25% - 20px);padding: 4px;box-shadow: 0 1px 4px rgba(0,0,0,0.16); background:#fff; margin:10px; position:relative; text-align:center;}
+.dur_wrap .dur_item .dur_head{ background:#2E615D; font-size:16px; line-height:32px; padding:5px 0; margin-bottom:0; color: #fff;}
+@media(max-width:650px){.dur_wrap .dur_item{ width: calc(50% - 20px);}}
+
+.step_class{ width: 98%;text-align: right;direction: rtl;background: #363652;color: #fff;padding: 10px 8px 10px 0px;}
+.ingr_class{background: #74b2ff;color: #fff;margin-left: 10px;padding: 5px 10px; font-family:Arial, Helvetica, sans-serif;}
+.step_icon_class{background: #009688;color: #fff;margin-left: 10px;padding: 10px 20px;float: right; font-family:Arial, Helvetica, sans-serif;}
+.dur_class{text-align:right;direction:rtl;padding:9px 10px 9px 0px;background: #39736e;color: #fff; width:95%}
+
+.dur_class2{  text-align:center;direction: rtl; width:100%;}
+.fullw{width: 100%;float: right;text-align: right;direction: rtl; margin: 2px 0px; padding:10px 0px;}
+.cook_mang{ text-align:right; direction:rtl; display: block; width:47%; float:right; background: #fff;color: #000;font-size: 14px; padding: 5px; margin: 5px; -webkit-box-shadow: 0 0 1px rgba(0,0,0,.2);-moz-box-shadow: 0 0 1px rgba(0,0,0,.2); box-shadow: 0 0 1px rgba(0,0,0,.2); min-height:65px;}
+.cook_mang2{ text-align:right; direction:rtl; display: block; width:47%; float:right; background: #fff;color: #000; padding:10px 5px; margin: 5px; -webkit-box-shadow: 0 0 1px rgba(0,0,0,.2);-moz-box-shadow: 0 0 1px rgba(0,0,0,.2); box-shadow: 0 0 1px rgba(0,0,0,.2);}
+</style>
+<script data-cfasync="false" nonce="457aa294-2011-492c-bf70-95b26b304ac7">try{(function(w,d){!function(bH,bI,bJ,bK){if(bH.zaraz)console.error("zaraz is loaded twice");else{bH[bJ]=bH[bJ]||{};bH[bJ].executed=[];bH.zaraz={deferred:[],listeners:[]};bH.zaraz._v="5876";bH.zaraz._n="457aa294-2011-492c-bf70-95b26b304ac7";bH.zaraz.q=[];bH.zaraz._f=function(bL){return async function(){var bM=Array.prototype.slice.call(arguments);bH.zaraz.q.push({m:bL,a:bM})}};for(const bN of["track","set","debug"])bH.zaraz[bN]=bH.zaraz._f(bN);bH.zaraz.init=()=>{var bO=bI.getElementsByTagName(bK)[0],bP=bI.createElement(bK),bQ=bI.getElementsByTagName("title")[0];bQ&&(bH[bJ].t=bI.getElementsByTagName("title")[0].text);bH[bJ].x=Math.random();bH[bJ].w=bH.screen.width;bH[bJ].h=bH.screen.height;bH[bJ].j=bH.innerHeight;bH[bJ].e=bH.innerWidth;bH[bJ].l=bH.location.href;bH[bJ].r=bI.referrer;bH[bJ].k=bH.screen.colorDepth;bH[bJ].n=bI.characterSet;bH[bJ].o=(new Date).getTimezoneOffset();if(bH.dataLayer)for(const bR of Object.entries(Object.entries(dataLayer).reduce((bS,bT)=>({...bS[1],...bT[1]}),{})))zaraz.set(bR[0],bR[1],{scope:"page"});bH[bJ].q=[];for(;bH.zaraz.q.length;){const bU=bH.zaraz.q.shift();bH[bJ].q.push(bU)}bP.defer=!0;for(const bV of[localStorage,sessionStorage])Object.keys(bV||{}).filter(bX=>bX.startsWith("_zaraz_")).forEach(bW=>{try{bH[bJ]["z_"+bW.slice(7)]=JSON.parse(bV.getItem(bW))}catch{bH[bJ]["z_"+bW.slice(7)]=bV.getItem(bW)}});bP.referrerPolicy="origin";bP.src="/cdn-cgi/zaraz/s.js?z="+btoa(encodeURIComponent(JSON.stringify(bH[bJ])));bO.parentNode.insertBefore(bP,bO)};["complete","interactive"].includes(bI.readyState)?zaraz.init():bH.addEventListener("DOMContentLoaded",zaraz.init)}}(w,d,"zarazData","script");window.zaraz._p=async bc=>new Promise(bd=>{if(bc){bc.e&&bc.e.forEach(be=>{try{const bf=d.querySelector("script[nonce]"),bg=bf?.nonce||bf?.getAttribute("nonce"),bh=d.createElement("script");bg&&(bh.nonce=bg);bh.innerHTML=be;bh.onload=()=>{d.head.removeChild(bh)};d.head.appendChild(bh)}catch(bi){console.error(`Error executing script: ${be}\n`,bi)}});Promise.allSettled((bc.f||[]).map(bj=>fetch(bj[0],bj[1])))}bd()});zaraz._p({"e":["(function(w,d){})(window,document)"]});})(window,document)}catch(e){throw fetch("/cdn-cgi/zaraz/t"),e;};</script></head><body   id="webpage">
+
+
+<div id="fb-root"></div>
+<script type="uplazyloadscript">(function(d, s, id) { 
+var js, fjs = d.getElementsByTagName(s)[0]; 
+if (d.getElementById(id)) return; 
+js = d.createElement(s); 
+js.id = id; js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v14.0'; 
+fjs.parentNode.insertBefore(js, fjs); 
+}(document, 'script', 'facebook-jssdk'));</script>
+<div id="main_wrap">
+
+
+
+<header id="up_header" class="fix">
+    <div class="container">
+                <span id="menu_hndlr" class="menu_hndlr"><img class="vam" width="22" height="17" onClick="show_menu_mob();" src="https://photo-cdn.urdupoint.com/images/icon-menu.png" alt="Open Menu" /></span>
+        
+        <div class="logo_wrap">
+            <a href="https://www.urdupoint.com/"><img width="84" height="40" class="logo" src="https://photo-cdn.urdupoint.com/daily/images/Logos/urdupoint-logo.png" alt="UrduPoint" /></a>
+        </div>
+        <div id="nav_wrap">
+            <ul class="main_nav">
+                <li><a title="Urdu Point Home" href="https://www.urdupoint.com/">Home</a></li>
+<li><a title="Kids Home" href="https://www.urdupoint.com/kids/">Kids</a></li>
+<li><a title="Articles" href="https://www.urdupoint.com/kids/section/articles.html">Articles <i aria-hidden="true" aria-label="Articles" class="fa fa-angle-down"></i></a><ul><li><a title="100 great personalities" href="https://www.urdupoint.com/kids/category/100-great-personalities.html">100 great personalities</a></li><li><a title="Kids Meals and Recipes" href="https://www.urdupoint.com/kids/category/kids-meals-and-recipes.html">Kids Meals and Recipes</a></li><li><a title="mutafariq mazameen" href="https://www.urdupoint.com/kids/category/mutafariq-mazameen.html">mutafariq mazameen</a></li></ul></li><li><a title="Stories" href="https://www.urdupoint.com/kids/section/stories.html">Stories <i aria-hidden="true" aria-label="Stories" class="fa fa-angle-down"></i></a><ul><li><a title="Moral Stories" href="https://www.urdupoint.com/kids/category/moral-stories.html">Moral Stories</a></li><li><a title="True Stories" href="https://www.urdupoint.com/kids/category/true-stories.html">True Stories</a></li><li><a title="funny stories" href="https://www.urdupoint.com/kids/category/funny-stories.html">funny stories</a></li></ul></li><li><a title="Miscellaneous" href="https://www.urdupoint.com/kids/section/miscellaneous.html">Miscellaneous <i aria-hidden="true" aria-label="Miscellaneous" class="fa fa-angle-down"></i></a><ul><li><a title="jokes" href="https://www.urdupoint.com/kids/category/jokes.html">jokes</a></li><li><a title="Puzzels" href="https://www.urdupoint.com/kids/category/puzzels.html">Puzzels</a></li></ul></li><li><a title="Games" href="https://www.urdupoint.com/kids/section/games.html">Games <i aria-hidden="true" aria-label="Games" class="fa fa-angle-down"></i></a><ul><li><a title="action games" href="https://www.urdupoint.com/kids/category/action-games.html">action games</a></li><li><a title="pool games" href="https://www.urdupoint.com/kids/category/pool-games.html">pool games</a></li><li><a title="racings games" href="https://www.urdupoint.com/kids/category/racings-games.html">racings games</a></li><li><a title="sports games" href="https://www.urdupoint.com/kids/category/sports-games.html">sports games</a></li><li><a title="cards games" href="https://www.urdupoint.com/kids/category/cards-games.html">cards games</a></li><li><a title="Adventure Games" href="https://www.urdupoint.com/kids/category/adventure-games.html">Adventure Games</a></li></ul></li><li><a title="Videos" href="https://www.urdupoint.com/kids/urdu-videos.html">Videos <i aria-hidden="true" aria-label="Videos" class="fa fa-angle-down"></i></a>
+<ul><li><a title="Poems" href="https://www.urdupoint.com/kids/urdu-videos/poems.html">Poems</a></li><li><a title="Stories" href="https://www.urdupoint.com/kids/urdu-videos/stories.html">Stories</a></li><li><a title="Learn Urdu" href="https://www.urdupoint.com/kids/urdu-videos/learn-urdu.html">Learn Urdu</a></li><li><a title="Islamic Videos" href="https://www.urdupoint.com/kids/urdu-videos/islamic-videos.html">Islamic Videos</a></li></ul></li>              
+<li><a title="Baby Names" href="https://www.urdupoint.com/names/">Baby Names</a></li>            </ul>
+        </div>
+                
+        
+    </div>
+</header>
+        
+
+
+<div class="clear"></div>
+<div class="header_gap"></div>
+<div class="clear"></div>
+
+<div id=""><div id="gpt-970-banner"><script>googletag.cmd.push(function() { googletag.display('gpt-970-banner'); });</script></div></div><div class="clear mb15"></div>
+
+
+
+
+	
+            
+            
+	<div class="container" id="main_content">
+    	<div class="main_bar">
+        	<div class="shad_box mb10">
+				<ul class="bread_crumb_en"><li><a href="https://www.urdupoint.com/">Home</a></li><li><i class="fa fa-angle-double-right"></i></li><li><a href="https://www.urdupoint.com/kids/">Kids</a></li><li><i class="fa fa-angle-double-right"></i></li><li><a href="https://www.urdupoint.com/kids/section/stories.html">Stories</a></li><li><i class="fa fa-angle-double-right"></i></li><li><a href="https://www.urdupoint.com/kids/category/moral-stories.html">Moral Stories</a></li><li><i class="fa fa-angle-double-right"></i></li><li><a href="https://www.urdupoint.com/kids/detail/moral-stories/tairhvin-kursi-800.html">Tairhvin Kursi</a></li></ul><div class="clear"></div><script type="application/ld+json">{"@context": "http://schema.org","@type": "BreadcrumbList","itemListElement": [{"@type": "ListItem","position": 1,"item": {"@id": "https://www.urdupoint.com/","name": "Home"}},{"@type": "ListItem","position": 2,"item": {"@id": "https://www.urdupoint.com/kids/","name": "Kids"}},{"@type": "ListItem","position": 3,"item": {"@id": "https://www.urdupoint.com/kids/section/stories.html","name": "Stories"}},{"@type": "ListItem","position": 4,"item": {"@id": "https://www.urdupoint.com/kids/category/moral-stories.html","name": "Moral Stories"}},{"@type": "ListItem","position": 5,"item": {"@id": "https://www.urdupoint.com/kids/detail/moral-stories/tairhvin-kursi-800.html","name": "Tairhvin Kursi"}}]}</script>        
+                <div class="clear"></div>
+                	
+				                            
+                            <h1 class="phead">Tairhvin Kursi - Article No. 800</h1>
+                
+                            <div class="clear"></div>
+                            
+                            <div class="ac"><figure id="FeatImgW"><img id="FeatImg" width="740" height="404" src="https://photo-cdn.urdupoint.com/show_img_new/kids/kids_article_images/2015/740x404/1431414058_icon.jpg._2" alt="Tairhvin Kursi"></figure><script type="uplazyloadscript">if(document.getElementById("FeatImg")){document.getElementById("FeatImg").style.display = "inline-block";}</script></div>                            
+                            <div class="clear"></div>
+                            
+                                                        <h2 class="urdu fs24 lh48 ar rtl txt_blue">تیرھویں کرسی - تحریر نمبر 800</h2>
+                                                        
+                            <div class="clear"></div>
+                            
+                                                        <p class="urdu fs20 lh40 ar rtl txt_red">فون رکھ کر وہ سر پکڑ کر کرسی پر بیٹھ گئیں۔ پھر وہی کمبخت 13منحوس ہندسہ ۔ وہ بڑبڑا رہی تھیں۔</p>
+                                                        
+                            <div class="clear"></div>
+                            
+                            <p class="art_info_bar rtl ar urdu fs16">
+                                                                <span><i class="fa fa-calendar-o ml5"></i> منگل <span class='arial'>12</span> مئی <span class='arial'>2015</span> </span>
+                            </p>
+                            
+                            									<div class="txt_detail urdu ar rtl">
+										<div class="txt_banner">
+											<div class="clear mb15"></div>
+<div id=""><div id="gpt-center-banner"><script>googletag.cmd.push(function() { googletag.display('gpt-center-banner'); });</script></div></div> 
+<div class="clear mb15"></div>										</div>
+											
+									<div align="justify"><font color="#0000FF">وقار محسن :</font><br />
+    بیگم اسرار کے وہمی مزاج کی وجہ سے پورا خاندان پریشان تھا۔ کوا دیوار پر کائیں کائیں کرے ، کالی بلی راستہ کارٹ جائے۔ منگل کو کسی کام کا آغاز کرنا ہو ، کسی ایسے ہند سے کا انتخاب جو دوسے تقسیم نہ ہوتا ہو۔ یہ سب توہمات ان کے ذہن پر اس طرح سوار رہتے جیسے زندگی اور موت کا مسئلہ ہو۔اسراس صاحب کی ترقی کے سلسلے میں آج دعوت کا انتظام ہو رہاتھا۔<div class="clear mt2"></div> اس دوران ان کی اسی کمزروی کی وجہ سے مسئلہ کھڑا ہو گیا تھا۔ جب بیگم اسرار مختلف انتظامات کا معائنہ کرنے ڈرائنگ روم میں آئیں اور کھانے کی میز کے گرد تیرہ کرسیوں کی ترتیب دیکھی تو بھڑک اُٹھیں :&rdquo;ائے ہے توبہ توبہ&lsquo; یہ تین تیرہ کا ہندسہ بڑا منحوس ہوتا ہے۔ کس نے تیرہ کریساں لگوائی ہیں۔</p><p class="hide_desk ac urdu rtl fs18 lh36" style="color: #666;">(جاری ہے)</p><div id="teads_upw"></div>
+
+
+<div class="clear"></div>
+<div align="center" style="text-align:center; padding-top:0px;padding-bottom:0px; margin:0 auto;">
+	<div id='div-gpt-ad-outstream-wrap'></div>
+    <div id='div-gpt-ad-1x1-wrap'></div>
+</div>
+<div class="clear"></div>
+
+<script>
+	document.getElementById("teads_upw").innerHTML = '<div id="teads"></div>';
+	
+	document.getElementById("div-gpt-ad-outstream-wrap").innerHTML = '<div id="div-gpt-ad-outstream"></div>';
+	document.getElementById("div-gpt-ad-1x1-wrap").innerHTML = '<div id="div-gpt-ad-1x1"></div>';
+	
+	googletag.cmd.push(function() { googletag.display("div-gpt-ad-outstream"); });
+	googletag.cmd.push(function() { googletag.display("div-gpt-ad-1x1"); });
+</script><div id="eng_mob_ad_wrap"><script>
+	if(upgj_x <= 800){
+		//googletag.defineSlot('/21678054/up-v2/mobile-middle', [300, 250], 'gpt-middle-banner').addService(googletag.pubads());
+		document.getElementById("div-gpt-ad-outstream-wrap").innerHTML = '<div id="gpt-middle-banner-in"><div id="gpt-middle-banner"></div></div>';
+		googletag.cmd.push(function() { googletag.display('gpt-middle-banner'); });
+	}
+</script></div><p  style="margin-top:0px;">&ldquo;<br />
+    اسرار صاحب نے کہا:ارے بیگم! آپ بھی کیسی احمقانہ باتیں کرتی ہیں۔<div class="clear mt2"></div> اس سے کیا فرق پڑتا ہے اب لوگوں کو مدعو کیا جا چکا ہے۔&ldquo;<br />
+    بیگم زور دے کر بولیں:&rdquo;یہ نہیں ہو سکتا۔ بد شگونی ہے۔ آپ ایسا کریں کہ مسٹر اور مسزاحمد حسین اور ان کی بیٹی کو بھی مدعو کر لیں، اس طرح تعداد سولہ ہو جائے گی، حالانکہ وقت کے وقت دعوت دینا بد اخلاقی ہے۔&ldquo;<br />
+    پھر بیگم اسرار نے فون نمبر ملایا۔ رابطہ ہونے پر وہ بولیں:&rdquo; مسز حسین! کیا حال ہیں آپ کے ؟ آپ کو کئی بار فون ملانے کی کوشش کی لیکن بات نہ ہو سکی۔<div class="clear mt2"></div> دراصل آج اسرار صاحب کی ترقی کے سلسلے میں رات کے کھانے کا انتظام کیا ہے۔پلیز آپ اور احمد بھائی ضرور آئیں اور روشن بیٹی کو بھی لائیں۔&ldquo;<br />
+    ادھر سے فارغ ہونے کے بعد انھوں نے بابا رحیم کو ہدایت کی کہ کھانے کی میز پر تین کرسیوں کا اضافہ کردیں ابھی کرسیاں نہیں لگائی گئی تھی کہ فون کی گھنٹی بجی۔ بیگم اسرار نے ہونٹ سکوڑتے ہوئے ریسیور اُٹھایا:کون؟ رشیدہ آپا۔<div class="clear mt2"></div> خیریت؟ کیا کہا؟ نفیس بھائی کو بخار ہے اور سہیل کا میچ ہے تو پھر آپ تینوں نہیں آسکیں گئے؟&ldquo;<br />
+    فون رکھ کر وہ سر پکڑ کر کرسی پر بیٹھ گئیں۔ پھر وہی کمبخت 13منحوس ہندسہ ۔ وہ بڑبڑا رہی تھیں۔ لوگ بھی کس قدر غیر ذمہ دار ہیں۔ وقت کے وقت معذرت کر رہے ہیں۔ اسی وجہ سے میں سسرالی خاندان والوں کو بلانے سے گھبراتی ہوں۔<br />
+    اسی دوران ان کا بڑا بیٹا ہاتھ میں ریکٹ گھماتا ہوا آیا اور کہا:&rdquo; ارے امی ! مجھے شام کو کلب جانا ہے۔<div class="clear mt2"></div> میں شاید ڈنر میں شریک نہ ہو پاوٴں ۔ آپ ایک کرسی کم کروا دیں۔ بارہ کا ہندسہ تو منحوس نہیں ہے نا؟&ldquo;<br />
+    کھانے کی میز سے ایک کرسی ہٹواتے ہوئے انھوں نے اطمینان کا سانس لیا ۔ اسی دوران پڑوس سے بیگم رفیق پرس گھماتی ہوئی تشریف لائیں اور کھانے کی میز کو آراستہ دیکھ کر انھوں نے تقریب کے بارے میں معلوم کیا تو بیگم اسرار نے تکلفاََ کہا &rdquo; ارے کیا آپ کا فون خراب ہے؟ میں صبح سے فون کر رہی ہوں آپ کو دعوت دینے کے لئے ۔<div class="clear mt2"></div> بھلایہ کیسے ممکن ہے کہ کسی تقریب میں آپ کو مدعونہ کیا جائے۔&ldquo;<br />
+    بیگم رفیق بے تکلفی سے بولیں&rdquo; ارے کوئی بات نہیں۔ اتنے قریبی تعلقات میں رسمی دعوت نامے کی کیا اہمیت ہے ۔رفیق تو آج لاہور گئے ہیں لیکن میں ضرور آوٴں گی۔&ldquo;<br />
+    بیگم رفیق کے جانے کے بعد بیگم اسرار غصے سے بال نوچنے لگیں۔ یعنی پھر کمبخت یہ 13کا ہندسہ۔ وہ جھنجلا کر اسرار صاحب سے مخاطب ہوئیں جو اطمینان سے اخبار پڑھ رہے تھے اور بیگم صاحب کی حالت پر مسکرا رہے تھے۔<div class="clear mt2"></div><br />
+    &rdquo;ارے آپ آرام سے اخبار پڑھ رہے ہیں۔ اب کیا حل ہو گا اس مسئل کا۔&ldquo; <br />
+    &rdquo;بھئی میرا خیال ہے کہ علی اکبر ڈرائیور سے کہہ دینا کے شام کو وہ ذرا ڈھنگ کے کپڑے پہن کر آجائے۔ اس طرح چودہ لوگ ہو جائیں گے۔&ldquo;<br />
+    بیگم کویہ مشورہ پسند نہیں آیا کہ ایک ملازم کو اپنے ساتھ کھانے کی میز پر بیٹھا یا جائے۔ پھر بھی، کیوں کہ مجبوری تھی۔<div class="clear mt2"></div> اکبر علی کو کھانے کے آداب سمجھائے گئے اور تاکید کر دی کہ شام کو معقول کپڑے پہن کر آجائے۔ رحیم چاچانے تھکے تھکے قدموں سے چل کر ایک کرسی کا اضافہ کر دیا۔ <br />
+    رات کو آٹھ بجے لوگ آنا شروع ہو گئے۔ کچھ ہی دیر بعد علی اکبر سرخ پھولوں والی چمک دار شیروانی پہنے آنکھوں میں کاجل لگائے تیل میں بھیگے بالوں کا چاند ماتھے پر بنائے تشریف لائے۔<div class="clear mt2"></div> لان میں بیٹھے لوگوں کو جھک کر فرشی سلام کیا ۔ ان کو دیکھ کر بیگم اسرار کے چہرے کا رنگ اُڑ گیا۔ اس سے پہلے وہ لوگوں کے درمیان رونق افروز ہوتے اسرار صاحب نے ان کو خونخوار نظروں سے گھورا اور آنکھ کے اشارہ سے وہاں سے جانے کا اشارہ کیا۔ اب پھر 13 لوگ رہ گئے تھے۔ اب وقت نہیں تھا اس لئے مجبوراََ کھانا لگا دیا گیا۔ <br />
+    کھانے کی میز کے اس چکر میں رحمت بابا اتنا اُلجھ گئے تھے کہ ان کو یاد ہی نہیں رہا اور انھوں نے بریانی میں نمک دو بارہ ڈال دیا۔<div class="clear mt2"></div><br />
+    کھانا شروع ہوا۔ بیگم اسرار نے شیخی بگھارتے ہوئے بریانی کی قاب مزارئیس بیگ کی طرف بڑھاتے ہوئے کہا:&rdquo;بھائی جان ! یہ نوش فرمائیں۔ فیصل آباد سے بطور خاص چاول منگوائے ہیں۔بکرا بھی گھر پر کٹوایا۔ صرف بریانی پر پانچ ہزار خرچ آیا ہے۔&ldquo;<br />
+    امجد بھائی نے ابھی بریانی چکھی ہی تھی۔ بیگم اسرار کی بات سن کر مسکرا کر بولے :&rdquo; بھابھی! درست فرما رہی ہیں۔ یقینا پانچ ہزار خرچ ہوئے ہوں گئے۔ دو ہزار کا تو نمک ہی پڑگیا ہو گا۔&ldquo;<br />
+    یہ سن کر اسرار صاحب نے بریانی چکھی اور ان کا سرندامت سے جھک گیا۔ مہمانوں کے جانے کے بعد اسرار رحیم بابا پر برس پڑے جن کی وجہ سے سب کے سامنے ان کی سبکی ہوئی لیکن بیگم اسرار کو اب بھی یقین تھا کہ یہ سب 13 کے منحوس ہندسے کی وجہ سے ہوا۔</div>									</div>
+									
+									                <div class="clear"></div>
+            </div>
+            
+            <div class="clear mb15"></div>
+<div id=""><div id="gpt-end-banner"><script>googletag.cmd.push(function() { googletag.display('gpt-end-banner'); });</script></div></div>
+<div class="clear mb15"></div>            
+<div class="social_sharer">
+    <span id="share_facebook" onClick="share_this_up('share_facebook')" class="ss_btn facebook" data-url="https://www.urdupoint.com/kids/detail/moral-stories/tairhvin-kursi-800.html" data-title="Tairhvin Kursi تیرھویں کرسی - Urdu Story and Article for Kids"><i class="fa fa-facebook" aria-hidden="true" title="Share On Facebook"></i> <span>Facebook</span></span>
+    
+    
+    <span id="share_twitter" onClick="share_this_up('share_twitter')" class="ss_btn twitter" data-url="https://www.urdupoint.com/kids/detail/moral-stories/tairhvin-kursi-800.html" data-title="Tairhvin Kursi تیرھویں کرسی - Urdu Story and Article for Kids"><i class="fa fa-twitter" aria-hidden="true" title="Share On Twitter"></i><span>Twitter</span></span>
+    
+    <span id="share_reddit" onClick="share_this_up('share_reddit')"  class="ss_btn reddit" data-url="https://www.urdupoint.com/kids/detail/moral-stories/tairhvin-kursi-800.html" data-title="Tairhvin Kursi تیرھویں کرسی - Urdu Story and Article for Kids"><i class="fa fa-reddit" aria-hidden="true" title="Share On Reddit"></i><span>Reddit</span></span>
+    
+    <span id="share_pinterest" onClick="share_this_up('share_pinterest')"  class="ss_btn pinterest" data-url="https://www.urdupoint.com/kids/detail/moral-stories/tairhvin-kursi-800.html" data-title="Tairhvin Kursi تیرھویں کرسی - Urdu Story and Article for Kids"><i class="fa fa-pinterest" aria-hidden="true" title="Share On Pinterest"></i><span>Pinterest</span></span>
+    
+    
+    <a rel="nofollow" id="share_whatsapp" class="ss_btn whatsapp" target="_blank" title="Share On Whatsapp" href="https://api.whatsapp.com/send?text=Tairhvin+Kursi+%D8%AA%DB%8C%D8%B1%DA%BE%D9%88%DB%8C%DA%BA+%DA%A9%D8%B1%D8%B3%DB%8C+-+Urdu+Story+and+Article+for+Kidshttps%3A%2F%2Fwww.urdupoint.com%2Fkids%2Fdetail%2Fmoral-stories%2Ftairhvin-kursi-800.html"><i class="fa fa-whatsapp" aria-hidden="true" title="Share On Whatsapp"></i><span>Whatsapp</span></a>
+</div>
+
+                        
+			<div class="clear mb20"></div>
+                        
+			<h2>Browse More Moral Stories</h2><div class="sharp_box_wrap"><a class="sharp_box" href="https://www.urdupoint.com/kids/detail/moral-stories/zindagi-ka-anmol-sabaq-2641.html">
+                                <img width="220" height="220" class="lazyload hwa" src="https://photo-cdn.urdupoint.com/adab/images/p220x220.jpg" data-src="https://photo-cdn.urdupoint.com/show_img_new/kids/kids_article_images/2024/220x220/pic_b7fd1_1710331187.jpg._1" alt="Zindagi Ka Anmol Sabaq">
+                                <p class="title_ur urdu">زندگی کا انمول سبق</p>
+                                <p class="title_en">Zindagi Ka Anmol Sabaq</p>
+                            </a><a class="sharp_box" href="https://www.urdupoint.com/kids/detail/moral-stories/acha-larka-pakka-dost-1472.html">
+                                <img width="220" height="220" class="lazyload hwa" src="https://photo-cdn.urdupoint.com/adab/images/p220x220.jpg" data-src="https://photo-cdn.urdupoint.com/show_img_new/kids/kids_article_images/2019/220x220/pic_6c43e_1563007927.jpg._1" alt="Acha Larka Pakka Dost">
+                                <p class="title_ur urdu">اچھا لڑکا پکا دوست۔۔تحریر: مختار احمد</p>
+                                <p class="title_en">Acha Larka Pakka Dost</p>
+                            </a><a class="sharp_box" href="https://www.urdupoint.com/kids/detail/moral-stories/azaadi-aik-anmool-naimat-1486.html">
+                                <img width="220" height="220" class="lazyload hwa" src="https://photo-cdn.urdupoint.com/adab/images/p220x220.jpg" data-src="https://photo-cdn.urdupoint.com/show_img_new/kids/kids_article_images/2019/220x220/pic_4b887_1564487147.jpg._1" alt="Azaadi Aik Anmool Naimat">
+                                <p class="title_ur urdu"> آزادی ایک انمول نعمت</p>
+                                <p class="title_en">Azaadi Aik Anmool Naimat</p>
+                            </a><a class="sharp_box" href="https://www.urdupoint.com/kids/detail/moral-stories/badshah-aur-engineer-ka-dilchasp-qissa-1309.html">
+                                <img width="220" height="220" class="lazyload hwa" src="https://photo-cdn.urdupoint.com/adab/images/p220x220.jpg" data-src="https://photo-cdn.urdupoint.com/show_img_new/kids/kids_article_images/2019/220x220/pic_20143_1551437127.jpg._1" alt="Badshah Aur Engineer Ka Dilchasp Qissa">
+                                <p class="title_ur urdu">بادشاہ اور انجینئر کا دلچسپ قصہ</p>
+                                <p class="title_en">Badshah Aur Engineer Ka Dilchasp Qissa</p>
+                            </a><a class="sharp_box" href="https://www.urdupoint.com/kids/detail/moral-stories/allah-ka-dost-2923.html">
+                                <img width="220" height="220" class="lazyload hwa" src="https://photo-cdn.urdupoint.com/adab/images/p220x220.jpg" data-src="https://photo-cdn.urdupoint.com/show_img_new/kids/kids_article_images/2026/220x220/pic_a29fe_1771415004.jpg._1" alt="Allah Ka Dost">
+                                <p class="title_ur urdu">اللہ کا دوست</p>
+                                <p class="title_en">Allah Ka Dost</p>
+                            </a><a class="sharp_box" href="https://www.urdupoint.com/kids/detail/moral-stories/lazeez-kheer-1867.html">
+                                <img width="220" height="220" class="lazyload hwa" src="https://photo-cdn.urdupoint.com/adab/images/p220x220.jpg" data-src="https://photo-cdn.urdupoint.com/show_img_new/kids/kids_article_images/2021/220x220/pic_33a6e_1610110060.jpg._1" alt="Lazeez Kheer">
+                                <p class="title_ur urdu">لذیذ کھیر</p>
+                                <p class="title_en">Lazeez Kheer</p>
+                            </a></div><div class="clear"></div><script>googletag.cmd.push(function() {googletag.defineSlot('/21678054/incontent-banner', [[336,280],[300,250]], 'inCont1').addService(googletag.pubads()).setCollapseEmptyDiv(true,true);});</script><div class=""><div id="inCont1"><script>googletag.cmd.push(function() {googletag.display('inCont1');});</script></div></div><div class="clear"></div><div class="sharp_box_wrap"><a class="sharp_box" href="https://www.urdupoint.com/kids/detail/moral-stories/lalchi-dost-last-episode-1683.html">
+                                <img width="220" height="220" class="lazyload hwa" src="https://photo-cdn.urdupoint.com/adab/images/p220x220.jpg" data-src="https://photo-cdn.urdupoint.com/show_img_new/kids/kids_article_images/2020/220x220/pic_e5524_1584212792.jpg._1" alt="Lalchi Dost (last Episode)">
+                                <p class="title_ur urdu">لالچی دوست (آخری قسط)</p>
+                                <p class="title_en">Lalchi Dost (last Episode)</p>
+                            </a><a class="sharp_box" href="https://www.urdupoint.com/kids/detail/moral-stories/pariyaan-aur-ghareeb-mochi-2149.html">
+                                <img width="220" height="220" class="lazyload hwa" src="https://photo-cdn.urdupoint.com/adab/images/p220x220.jpg" data-src="https://photo-cdn.urdupoint.com/show_img_new/kids/kids_article_images/2021/220x220/pic_260ed_1640607690.jpg._1" alt="Pariyaan Aur Ghareeb Mochi">
+                                <p class="title_ur urdu">پریاں اور غریب موچی</p>
+                                <p class="title_en">Pariyaan Aur Ghareeb Mochi</p>
+                            </a><a class="sharp_box" href="https://www.urdupoint.com/kids/detail/moral-stories/qaum-ki-pehchan-2620.html">
+                                <img width="220" height="220" class="lazyload hwa" src="https://photo-cdn.urdupoint.com/adab/images/p220x220.jpg" data-src="https://photo-cdn.urdupoint.com/show_img_new/kids/kids_article_images/2024/220x220/pic_6bba6_1705150345.jpg._1" alt="Qaum Ki Pehchan">
+                                <p class="title_ur urdu">قوم کی پہچان</p>
+                                <p class="title_en">Qaum Ki Pehchan</p>
+                            </a><a class="sharp_box" href="https://www.urdupoint.com/kids/detail/moral-stories/masoom-mujrim-945.html">
+                                <img width="220" height="220" class="lazyload hwa" src="https://photo-cdn.urdupoint.com/adab/images/p220x220.jpg" data-src="https://photo-cdn.urdupoint.com/show_img_new/kids/kids_article_images/2016/220x220/pic_1469787089.jpg._1" alt="Masoom Mujrim">
+                                <p class="title_ur urdu">معصوم مجرم</p>
+                                <p class="title_en">Masoom Mujrim</p>
+                            </a><a class="sharp_box" href="https://www.urdupoint.com/kids/detail/moral-stories/mount-washington-ki-chotti-1737.html">
+                                <img width="220" height="220" class="lazyload hwa" src="https://photo-cdn.urdupoint.com/adab/images/p220x220.jpg" data-src="https://photo-cdn.urdupoint.com/show_img_new/kids/kids_article_images/2020/220x220/pic_e7d4c_1591359993.jpg._1" alt="Mount Washington Ki Chotti">
+                                <p class="title_ur urdu">ماوٴنٹ واشنگٹن کی چوٹی</p>
+                                <p class="title_en">Mount Washington Ki Chotti</p>
+                            </a><a class="sharp_box" href="https://www.urdupoint.com/kids/detail/moral-stories/achai-ka-inaam-1692.html">
+                                <img width="220" height="220" class="lazyload hwa" src="https://photo-cdn.urdupoint.com/adab/images/p220x220.jpg" data-src="https://photo-cdn.urdupoint.com/show_img_new/kids/kids_article_images/2020/220x220/pic_26dd4_1585150901.jpg._1" alt="Achai Ka Inaam">
+                                <p class="title_ur urdu">اچھائی کا انعام</p>
+                                <p class="title_en">Achai Ka Inaam</p>
+                            </a></div>            
+            <div class="clear mb20"></div>
+
+                    
+		</div>   
+                
+        <div class="side_bar">
+            
+<div class="clear"></div>
+<div id=""><div id="Side1-banner"><script>googletag.cmd.push(function() { googletag.display('Side1-banner'); });</script></div></div>
+<div class="clear"></div> 
+
+<div class="clear mb20"></div><h2>Urdu Jokes</h2><div class="sjoke_box_wrap"><a class="sjoke_box" href="https://www.urdupoint.com/kids/detail/jokes/cycle-beghar-taale-ke-1420.html">
+            	<i aria-hidden="true" aria-label="Joke" class="joke_icon fa fa-smile-o"></i>
+				<p class="title_ur urdu rtl">سائیکل بغیر تالے کے</p>
+                <p class="title_en">Cycle beghar taale ke</p>
+             </a><a class="sjoke_box" href="https://www.urdupoint.com/kids/detail/jokes/dehati-630.html">
+            	<i aria-hidden="true" aria-label="Joke" class="joke_icon fa fa-smile-o"></i>
+				<p class="title_ur urdu rtl">دیہاتی</p>
+                <p class="title_en">Dehati</p>
+             </a><a class="sjoke_box" href="https://www.urdupoint.com/kids/detail/jokes/bari-achi-baat-kahi-242.html">
+            	<i aria-hidden="true" aria-label="Joke" class="joke_icon fa fa-smile-o"></i>
+				<p class="title_ur urdu rtl">بڑی اچھی بات کہی</p>
+                <p class="title_en">bari achi baat kahi</p>
+             </a><a class="sjoke_box" href="https://www.urdupoint.com/kids/detail/jokes/shakoor-1248.html">
+            	<i aria-hidden="true" aria-label="Joke" class="joke_icon fa fa-smile-o"></i>
+				<p class="title_ur urdu rtl">شکور</p>
+                <p class="title_en">Shakoor</p>
+             </a><a class="sjoke_box" href="https://www.urdupoint.com/kids/detail/jokes/ustad-shagird-se-1255.html">
+            	<i aria-hidden="true" aria-label="Joke" class="joke_icon fa fa-smile-o"></i>
+				<p class="title_ur urdu rtl">استاد شاگرد سے</p>
+                <p class="title_en">Ustad Shagird se</p>
+             </a><a class="sjoke_box" href="https://www.urdupoint.com/kids/detail/jokes/nazir-ahmad-zapped-hussain-se-862.html">
+            	<i aria-hidden="true" aria-label="Joke" class="joke_icon fa fa-smile-o"></i>
+				<p class="title_ur urdu rtl">نذیر احمد زاپد حسین سے</p>
+                <p class="title_en">Nazir ahmad zapped hussain se</p>
+             </a></div><a class="fr  arial fs15 lh30 txt_blue ltr" title="Browse More Urdu Jokes" href="https://www.urdupoint.com/kids/category/jokes.html">Browse More Urdu Jokes <i aria-hidden="true" aria-label="Browse More Urdu Jokes" class="fa fa-angle-double-right ml5"></i></a><div class="clear mb20"></div>
+<div class="clear mb20"></div><h2>Urdu Paheliyan</h2><div class="sjoke_box_wrap"><a class="sjoke_box" href="https://www.urdupoint.com/kids/detail/puzzels/har-ek-jaane-uska-naam-736.html">
+            	<i aria-hidden="true" aria-label="Puzzle" class="joke_icon fa fa-puzzle-piece"></i>
+				<p class="title_ur urdu rtl">ہر اک جانے اس کا نام</p>
+                <p class="title_en">har ek jaane uska naam</p>
+             </a><a class="sjoke_box" href="https://www.urdupoint.com/kids/detail/puzzels/jab-bhi-wo-quran-uthaye-537.html">
+            	<i aria-hidden="true" aria-label="Puzzle" class="joke_icon fa fa-puzzle-piece"></i>
+				<p class="title_ur urdu rtl">جب بھی وہ قرآن اٹھائے</p>
+                <p class="title_en">jab bhi wo quran uthaye</p>
+             </a><a class="sjoke_box" href="https://www.urdupoint.com/kids/detail/puzzels/jheel-ke-upar-ek-minar-670.html">
+            	<i aria-hidden="true" aria-label="Puzzle" class="joke_icon fa fa-puzzle-piece"></i>
+				<p class="title_ur urdu rtl">جھیل کے اوپر اک مینار</p>
+                <p class="title_en">jheel ke upar ek minar</p>
+             </a><a class="sjoke_box" href="https://www.urdupoint.com/kids/detail/puzzels/he-choti-si-esi-shay-642.html">
+            	<i aria-hidden="true" aria-label="Puzzle" class="joke_icon fa fa-puzzle-piece"></i>
+				<p class="title_ur urdu rtl">ہے چھوٹی سی ایسی شے</p>
+                <p class="title_en">he choti si esi shay</p>
+             </a><a class="sjoke_box" href="https://www.urdupoint.com/kids/detail/puzzels/pani-se-bhara-sheeshe-ka-gola-691.html">
+            	<i aria-hidden="true" aria-label="Puzzle" class="joke_icon fa fa-puzzle-piece"></i>
+				<p class="title_ur urdu rtl">پانی سے ابھرا شیشے کا گولا</p>
+                <p class="title_en">pani se bhara sheeshe ka gola</p>
+             </a><a class="sjoke_box" href="https://www.urdupoint.com/kids/detail/puzzels/nagar-nagar-mukky-chakkar-kate-659.html">
+            	<i aria-hidden="true" aria-label="Puzzle" class="joke_icon fa fa-puzzle-piece"></i>
+				<p class="title_ur urdu rtl">نگر نگر مکے چکر کاٹے</p>
+                <p class="title_en">nagar nagar mukky chakkar kate</p>
+             </a></div><a class="fr  arial fs15 lh30 txt_blue ltr" title="Browse More Urdu Paheliyan" href="https://www.urdupoint.com/kids/category/puzzels.html">Browse More Urdu Paheliyan <i aria-hidden="true" aria-label="Browse More Urdu Paheliyan" class="fa fa-angle-double-right ml5"></i></a><div class="clear mb20"></div>
+
+<div class="clear"></div>
+<div id=""><div id="Side2"><script>googletag.cmd.push(function() { googletag.display('Side2'); });</script></div></div>
+<div class="clear"></div> 
+			
+<a href="https://www.urdupoint.com/kids/section/articles.html" class="link_rmenu">Articles</a><div class="clear"></div><div class="link_smenu_wrap"><a href="https://www.urdupoint.com/kids/category/100-great-personalities.html" class="link_smenu">100 Great Personalities</a><a href="https://www.urdupoint.com/kids/category/kids-meals-and-recipes.html" class="link_smenu">Kids Meals And Recipes</a><a href="https://www.urdupoint.com/kids/category/mutafariq-mazameen.html" class="link_smenu">Mutafariq Mazameen</a></div><div class="clear"></div><a href="https://www.urdupoint.com/kids/section/stories.html" class="link_rmenu">Stories</a><div class="clear"></div><div class="link_smenu_wrap"><a href="https://www.urdupoint.com/kids/category/moral-stories.html" class="link_smenu">Moral Stories</a><a href="https://www.urdupoint.com/kids/category/true-stories.html" class="link_smenu">True Stories</a><a href="https://www.urdupoint.com/kids/category/funny-stories.html" class="link_smenu">Funny Stories</a></div><div class="clear"></div><a href="https://www.urdupoint.com/kids/section/miscellaneous.html" class="link_rmenu">Miscellaneous</a><div class="clear"></div><div class="link_smenu_wrap"><a href="https://www.urdupoint.com/kids/category/jokes.html" class="link_smenu">Jokes</a><a href="https://www.urdupoint.com/kids/category/puzzels.html" class="link_smenu">Puzzels</a></div><div class="clear"></div><a href="https://www.urdupoint.com/kids/section/games.html" class="link_rmenu">Games</a><div class="clear"></div><div class="link_smenu_wrap"><a href="https://www.urdupoint.com/kids/category/action-games.html" class="link_smenu">Action Games</a><a href="https://www.urdupoint.com/kids/category/pool-games.html" class="link_smenu">Pool Games</a><a href="https://www.urdupoint.com/kids/category/racings-games.html" class="link_smenu">Racings Games</a><a href="https://www.urdupoint.com/kids/category/sports-games.html" class="link_smenu">Sports Games</a><a href="https://www.urdupoint.com/kids/category/cards-games.html" class="link_smenu">Cards Games</a><a href="https://www.urdupoint.com/kids/category/adventure-games.html" class="link_smenu">Adventure Games</a></div><div class="clear"></div><a href="https://www.urdupoint.com/names/" class="link_rmenu">Baby Names</a><a href="https://www.urdupoint.com/kids/urdu-videos.html" class="link_rmenu">Urdu Videos</a><div class="clear"></div><div class="link_smenu_wrap"><a href="https://www.urdupoint.com/kids/urdu-videos/poems.html" class="link_smenu">Poems</a><a href="https://www.urdupoint.com/kids/urdu-videos/stories.html" class="link_smenu">Stories</a><a href="https://www.urdupoint.com/kids/urdu-videos/learn-urdu.html" class="link_smenu">Learn Urdu</a><a href="https://www.urdupoint.com/kids/urdu-videos/islamic-videos.html" class="link_smenu">Islamic Videos</a></div><div class="clear"></div>        </div>
+        
+        <div class="clear"></div>
+    </div>    
+          
+<div class="clear"></div><footer>    <div class="container">        <div class="ftr_info_box">            <div class="mt10 mb10"><img width="140" height="76" src="https://photo-cdn.urdupoint.com/daily/images/Logos/footer-logo.png" alt="UrduPoint.com" /></div>            <p>UrduPoint Network is the largest independent digital media house from Pakistan, catering the needs of its users since year 1997. We provide breaking news, Pakistani news, International news, Business news, Sports news, Urdu news and Live Urdu News</p>            <div class="clear"></div>            <div class="ftr_social_box">                                            <a class="fsb_facebook" target="_blank" rel="nofollow" title="Official Facebook Page of UrduPoint" href="https://www.facebook.com/urdupoint.network"><i aria-hidden="true" class="fa fa-facebook" title="Official Facebook Page of UrduPoint"></i></a>                                                                <a class="fsb_twitter" target="_blank" rel="nofollow" title="Official Twitter Account of UrduPoint"  href="https://twitter.com/DailyUrduPoint"><i aria-hidden="true" class="fa fa-twitter" title="Official Twitter Account of UrduPoint"></i></a>                                                                <a class="fsb_pinterest" target="_blank" rel="nofollow" title="Official Pinterest Page of UrduPoint" href="https://www.pinterest.com/urdupoint/"><i aria-hidden="true" class="fa fa-pinterest" title="Official Pinterest Page of UrduPoint"></i></a>                                                                <a class="fsb_linkedin" target="_blank" rel="nofollow" title="Official Linkedin Profile of UrduPoint" href="http://www.linkedin.com/company/pakistanpoint-com/"><i aria-hidden="true" class="fa fa-linkedin" title="Official Linkedin Profile of UrduPoint"></i></a>                                                                <a class="fsb_youtube" target="_blank" rel="nofollow" title="Official Youtube Channel of UrduPoint" href="https://www.youtube.com/c/urdupointcomofficial"><i class="fa fa-youtube-play" title="Official Youtube Channel of UrduPoint"></i></a>                                                                <a class="fsb_instagram" target="_blank" rel="nofollow" title="Official Instagram Page of UrduPoint" href="https://www.instagram.com/urdupoint_com/"><i aria-hidden="true" class="fa fa-instagram" title="Official Instagram Page of UrduPoint"></i></a>                                                                <a class="fsb_rss" target="_blank" title="UrduPoint.com English News RSS Feed" href="https://www.urdupoint.com/en/sitemap/news.rss"><i aria-hidden="true" class="fa fa-rss" title="Official RSS Feed of UrduPoint"></i></a>                                            </div>        </div>                <div class="ftr_link_box">            <h3>About Us</h3>            <a href="https://www.urdupoint.com/about-us.html">About Us</a>            <a href="https://www.urdupoint.com/contact.html">Contact Us</a>            <a href="https://www.urdupoint.com/disclaimer.html">Disclaimer</a>            <a href="https://www.urdupoint.com/privacy-policy.html">Privacy Policy</a>            <a href="https://www.urdupoint.com/advertisement.html">Advertisement</a>        </div>                <div class="ftr_link_box">            <h3>Oue Network</h3>            <a href="https://www.pakistanpoint.com/">PakistanPoint</a>            <a href="https://www.urdupoint.com/english/">English News</a>            <a href="https://www.urdupoint.com/arabic/">Arabic News</a>            <a href="https://www.urdupoint.com/app" target="_blank"><img width="95" height="28" src="https://photo-cdn.urdupoint.com/images/icon-google-playstore.png" title="Get UrduPoint App On Google Playstore" /></a>            <a href="https://apps.apple.com/us/app/urdupoint/id1622808708" target="_blank" rel="nofollow"><img width="95" height="28" src="https://photo-cdn.urdupoint.com/images/icon-apple-store.png" title="Get UrduPoint App On Apple Store" /></a>        </div>                <div class="ftr_link_box">            <h3>Useful Links</h3>            <a href="https://www.urdupoint.com/send-content">Send Your Content</a>            <a href="https://www.urdupoint.com/en/sitemap/news.rss">RSS Feed</a>            <a href="https://www.urdupoint.com/news-widget.html">News Widget</a>        </div>                <div class="clear"></div>                <div class="smore_links">                                    <strong>Site Links: </strong><a title="Ramadan 2026 Timings in Pakistan" href="https://www.urdupoint.com/islam/pakistan-ramadan-calendar-sehar-aftar-timings.html"><strong>Ramadan 2026</strong></a> - <a title="Education in Pakistan" href="https://www.urdupoint.com/education/">Education</a> - <a title="Urdu News - Live Urdu News Online - Breaking Urdu News" href="https://www.urdupoint.com/urdu-news">Urdu News</a> - <a title="Breaking News - Breaking Urdu News - Latest Trending News" href="https://www.urdupoint.com/breaking-news.html">Breaking News</a> - <a title="Pakistan News - Breaking News from Pakistan, Updated and Latest News of Pakistan" href="https://www.urdupoint.com/en/">English News</a> - <strong><a href="https://www.urdupoint.com/sports/cricket-league/14/pakistan-super-league-2025.html">PSL 2025</a></strong> - <a title="Watch Live TV Channels - Live Stream of Pakistani Channel" href="https://www.urdupoint.com/tv/">Live Tv Channels</a> - <a title="Urdu Horoscope - Daily Urdu Horoscope 2026, Weekly Urdu Horoscope - Monthly Urdu Horoscope" href="https://www.urdupoint.com/horoscope/daily-horoscope-in-urdu.html">Urdu Horoscope</a> - <a title="Daily Urdu Horoscope, Horoscope in Urdu" href="https://www.urdupoint.com/horoscope/urdu.html">Horoscope in Urdu</a> - <a title="Islamic Names in Urdu - Name Meanings - Muslim Names for Boys, Muslim Names for Girls" href="https://www.urdupoint.com/names/">Muslim Names in Urdu</a> - <a title="Urdu Poetry, Urdu Shayari, Love Poetry, Sad Poetry" href="https://www.urdupoint.com/poetry/">Urdu Poetry</a> - <a title="Love Poetry in Urdu" href="https://www.urdupoint.com/poetry/love-poetry.html">Love Poetry</a> - <a title="Sad Poetry in Urdu" href="https://www.urdupoint.com/poetry/sad-poetry.html">Sad Poetry</a> - <a title="Prize Bond, Schedule Results and Prize Bond List" href="https://www.urdupoint.com/business/prize-bonds.html">Prize Bond</a> - <a title="Mobile Prices in Pakistan, Latest Mobile Phone Price in Pakistan" href="https://www.urdupoint.com/mobile/">Mobile Prices in Pakistan</a> - <a title="Train Timings, Status &amp; Schedule in Pakistan" href="https://www.urdupoint.com/travel/pakistan/trains.html">Train Timings</a> - <a title="English to Urdu - Dictionary English to Urdu and Urdu to English" href="https://www.urdupoint.com/dictionary/">English to Urdu</a> - <a title="Abu Dhabi Big Ticket" href="https://www.urdupoint.com/business/uae/lottery/bigticket.html">Big Ticket</a> - <a title="Translate English to Urdu -  Translation of English to Urdu - Urdu to English" href="https://www.urdupoint.com/dictionary/translate-english-to-urdu.html">Translate English to Urdu</a> - <a title="Ramadan 2026 Timings and Worldwide - Sehar o Iftar timings" href="https://www.urdupoint.com/islam/ramadan-calendar-sehar-aftar-timings-up.html">Ramadan Calendar</a> - <a title="Namaz Time, Pakistan Prayer Timing, Worldwide Namaz and Prayer time" href="https://www.urdupoint.com/islam/prayer-timings.html">Prayer Times</a> - <a href="https://www.urdupoint.com/business/uae/lottery/ddf.html">DDF Raffle</a> - <a href="https://www.urdupoint.com/mobile/sms.html">SMS messages</a> - <a title="2026 Islamic Calendar, Hijri Calendar &amp; Hijri Month" href="https://www.urdupoint.com/islam/islamic-calendar.html">Islamic Calendar</a> - <a title="20205 Islamic Events, Eid, Hajj, Shab e Miraj, Shab e Barat, Eid Milad un Nabi, Ramadan dates" href="https://www.urdupoint.com/islam/islamic-events.html">Events</a> - <a title="Today Islamic  Date - Today Hijri Date" href="https://www.urdupoint.com/islam/today-islamic-date.html">Today Islamic Date</a> - <a title="Travel Information for Pakistani Travelers" href="https://www.urdupoint.com/travel/">Travel</a> - <a href="https://www.urdupoint.com/business/uae/lottery.html">UAE Raffles</a> - <a title="Pakistan Flight Timings - Arrivals &amp; Departures" href="https://www.urdupoint.com/travel/pakistan/airports.html">Flight Timings</a> - <a title="Visa Guide From Pakistan To All Countries" href="https://www.urdupoint.com/travel/visa.html">Travel Guide</a> -&nbsp;<a href="https://www.urdupoint.com/business/prize-bonds-draw-schedule.html">Prize Bond Schedule</a> - <a title="Arabic News - Latest Arabic News from all over the world" href="https://www.urdupoint.com/arabic/">Arabic News</a> - <a title="Urdu Recipes - Pakistani Cooking Recipes - Urdu Cooking Recipes, Food Recipes" href="https://www.urdupoint.com/cooking/">Urdu Cooking Recipes</a> - <a title="Business Directory of Pakistan" href="https://www.urdupoint.com/business/directory.html">Directory</a> - <a title="Pakistan Exams Results" href="https://www.urdupoint.com/education/results.html">Pakistan Results</a> - <a title="Past Papers of every BISE" href="https://www.urdupoint.com/education/past-papers.html">Past Papers</a> - <a title="Boards of Education in Pakistan" href="https://www.urdupoint.com/education/boards-of-education.html">BISE</a> - <a title="Schools in Pakistan" href="https://www.urdupoint.com/education/schools.html">Schools in Pakistan</a> - <a title="Academies &amp; Tuition Centers in Pakistan" href="https://www.urdupoint.com/education/academies-in-pakistan.html">Academies &amp; Tuition Centers</a> - <a title="Car Prices in Pakistan" href="https://www.urdupoint.com/cars/">Car Prices</a> - <a title="Bikes Prices in Pakistan - Motorcycle Prices" href="https://www.urdupoint.com/bikes/">Bikes Prices</a>                            </div>    </div>        <div class="clear"></div>        <div class="ftr_bottom">        <div class="container">            <p>&copy; 1997-2026 UrduPoint Network. All rights of the publication are reserved by UrduPoint.com. Reproduction without proper consent is not allowed.</p>        </div>    </div></footer>                    <div class="clear"></div></div><span onClick="topFunction()" id="ScrollToTop" aria-label="Go to top" title="Go to top"><i aria-hidden="true" title="Go to top" class="fa fa-angle-up"></i></span>  
+
+
+<script>
+	if(document.querySelector('.main_bar')) 
+	{
+		var el = document.querySelectorAll(".main_bar");
+		elChild = document.createElement('div');
+		elChild.setAttribute("class", "header_fixed_top"); 
+		elChild.setAttribute("id", "header_fixed_top_banner"); 
+		elChild.innerHTML = '<div class="sticky-top-show"><div id="HeadTopSticky"></div></div>';
+		el[0].insertBefore(elChild, el[0].firstChild);
+		
+		
+	  var el_tfbl = document.getElementById("header_fixed_top_banner");
+		var tfbl_pos = el_tfbl.getBoundingClientRect().top;
+		
+		if(upgj_x <= 800)
+		{
+			var tfbl_pos_next = 700;
+	//		var tfbl_pos_next = 1200;
+		}
+		else
+		{
+			var tfbl_pos_next = 1150;
+		} 
+	  
+		var max_tfbl_pos = parseInt(tfbl_pos) + parseInt(tfbl_pos_next);
+		
+		var tfbl_scroll = function() 
+		{
+			if(window.pageYOffset > max_tfbl_pos)
+			{
+				if(el_tfbl.classList.contains('header_fixed_top'))
+				{
+					el_tfbl.classList.remove('header_fixed_top');
+				}	
+			}
+			else
+			{
+				if(el_tfbl.classList.contains('header_fixed_top'))
+				{
+					
+				}
+				else
+				{
+					el_tfbl.classList.add('header_fixed_top');
+				}
+			}
+		}
+		window.addEventListener('scroll', tfbl_scroll);
+		 
+	  var refreshed_HeadTopSticky = false;
+	
+		var pos_HeadTopSticky = document.getElementById("HeadTopSticky").getBoundingClientRect().top;
+	
+	  var adAlmostVisibleScrollValueTop_HeadTopSticky = pos_HeadTopSticky - 10;
+	  
+	  //console.log('HeadTopSticky must be viewd after : '+adAlmostVisibleScrollValueTop_HeadTopSticky);
+	  
+	  var listener_HeadTopSticky = function() {
+		if (window.scrollY >= adAlmostVisibleScrollValueTop_HeadTopSticky && !refreshed_HeadTopSticky) {
+		 /* googletag.cmd.push(function() {
+			googletag.pubads().refresh([HeadTopSticky]);
+		  });*/
+		  
+		   googletag.cmd.push(function() { googletag.display('HeadTopSticky'); });
+		  refreshed_HeadTopSticky = true;
+	
+		  window.removeEventListener('scroll', listener_HeadTopSticky);
+		}
+	  }
+	  window.addEventListener('scroll', listener_HeadTopSticky);
+	}
+</script><div id='FooterFixed' align="center" style="text-align: center;padding-top: 0px;padding-bottom: 0px;margin: 0px auto;width: 100%;">
+	<script>googletag.cmd.push(function() { googletag.display('FooterFixed'); });</script>
+</div>
+			
+<div align="center" style="margin:0 auto;">
+<script type="uplazyloadscript" data-minify="1" src="https://player.urdupoint.com/player/urdupoint.js"></script>           
+<script type="uplazyloadscript" data-playerPro="current">
+    if(upgj_x <= 800)
+    {
+        //mobile
+        (function(){var s=document.querySelector('script[data-playerPro="current"]');s.removeAttribute("data-playerPro");(playerPro=window.playerPro||[]).push({id:"QhkFhguM8DKQLDR0lq9FdnGs7EIZB5FeEaX9Y5sPcFvhsgJYPWDi",after:s});})();
+        
+        (function(){var style = document.createElement('style');
+parent.document.getElementsByTagName('head')[0].appendChild(style);
+style.type = 'text/css';
+style.appendChild(document.createTextNode('.pro-player-wrapper {margin-bottom: 60px !important; z-index: 9999999;}'));})();
+    }
+    else
+    {
+        //desktop
+        (function(){var s=document.querySelector('script[data-playerPro="current"]');s.removeAttribute("data-playerPro");(playerPro=window.playerPro||[]).push({id:"w0p7LNmZgyjz1KvXRMDtpVOPJsNKefu5pSN8AHhG1w2gaBtcupr8",after:s});})();
+		
+		 (function(){var style = document.createElement('style');
+parent.document.getElementsByTagName('head')[0].appendChild(style);
+style.type = 'text/css';
+style.appendChild(document.createTextNode('.pro-player-wrapper {margin-bottom: 120px !important; z-index: 9999999;}'));})();
+    }
+</script>
+</div>
+
+<noscript id="deferred-styles">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+</noscript>
+<script type="uplazyloadscript">var loadDeferredStyles=function(){var a=document.getElementById("deferred-styles"),b=document.createElement("div");b.innerHTML=a.textContent,document.body.appendChild(b),a.parentElement.removeChild(a)},raf=requestAnimationFrame||mozRequestAnimationFrame||webkitRequestAnimationFrame||msRequestAnimationFrame;raf?raf(function(){window.setTimeout(loadDeferredStyles,0)}):window.addEventListener("load",loadDeferredStyles);function loadScript(a,b){var c=document.createElement("script");c.type="text/javascript",c.readyState?c.onreadystatechange=function(){"loaded"!=c.readyState&&"complete"!=c.readyState||(c.onreadystatechange=null,b())}:c.onload=function(){b()},c.src=a,document.getElementsByTagName("head")[0].appendChild(c)}function loadjscssfile(a,b){if("js"==b){var c=document.createElement("script");c.setAttribute("type","text/javascript"),c.setAttribute("src",a)}else if("css"==b){var c=document.createElement("link");c.setAttribute("rel","stylesheet"),c.setAttribute("type","text/css"),c.setAttribute("href",a)}"undefined"!=typeof c&&document.getElementsByTagName("head")[0].appendChild(c)}</script>
+
+<script type="uplazyloadscript" src="https://cdn.urdupoint.com/eng_includes/js/main.js"></script>
+
+
+<script type="uplazyloadscript" data-cfasync="false">
+loadScript("https://cdn.onesignal.com/sdks/OneSignalSDK.js", function(){
+		var OneSignal = window.OneSignal || [];
+		OneSignal.push(["init", {
+		  appId: "2535f0c1-6e9f-46b2-95ee-15dc8583598c",
+		  safari_web_id: 'web.onesignal.auto.39adc2cb-6008-498a-9928-7e19718d3b6a',
+		  autoRegister: true, // Set to true to automatically prompt visitors
+		  subdomainName: 'urdupoint',   
+		  promptOptions: {
+				 //These prompt options values configure both the HTTP prompt and the HTTP popup. 
+				//actionMessage limited to 90 characters 
+				actionMessage: "اُردو پوائنٹ کی تازہ ترین خبروں سے باخبر رئیے، فوری نوٹیفیکیشن حاصل کرنے کیلئے کلک کیجئے",
+
+				// acceptButtonText limited to 15 characters 
+				acceptButtonText: "جی ہاں",
+
+				// cancelButtonText limited to 15 characters 
+				cancelButtonText: "نہیں شکریہ"
+			},
+		  welcomeNotification: {
+				"title": "خوش آمدید",
+				"message": "اردوپوائنٹ نوٹیفکیشن سروس کا حصہ بننے کا شکریہ",
+				// "url": ""  Leave commented for the notification to not open a window on Chrome and Firefox (on Safari, it opens to your webpage) 
+			},
+		  notifyButton: {
+			  enable: true // Set to false to hide 
+		  }
+		}]);
+	});
+</script>
+
+  
+
+
+
+
+
+
+
+
+<script type="uplazyloadscript" data-cfasync="false">
+	if(document.getElementById("breaking_box_wrap"))
+	{
+		loadScript("https://embed.urdupoint.com/rss/json/top/breaking_news.json",function()
+		{
+			if(up_breaking_news.news_id)
+			{
+				var bn_id 			= up_breaking_news.news_id;
+				var bn_news_title 	= up_breaking_news.news_title;
+				var bn_news_image 	= up_breaking_news.news_image;
+				var bn_image_alt 	= up_breaking_news.image_alt;
+				var bn_news_url 	= up_breaking_news.news_url;
+							
+				document.getElementById("breaking_box_wrap").innerHTML = '<a target="_blank" class="urdu full fl ar rtl mb10 bsbb breaking_box" href="'+bn_news_url+'?utm_source=Internal&utm_medium=Breaking-News"><span class="txt_white fs20 lh40 fl bn_tag">بریکنگ نیوز</span><img class="bn_img" src="'+bn_news_image+'" alt="'+bn_image_alt+'"><p class="fs17 lh34 txt_white mt10">'+bn_news_title+'</p></a>';
+			}
+			
+		});	
+	}
+	
+	if(document.getElementById("menu_app_icon"))
+	{
+		var isAndroid = /(android)/i.test(navigator.userAgent);
+		if (isAndroid)
+		{
+			document.getElementById("menu_app_icon").style.display = 'inline-block';
+		}
+	}
+	
+</script>
+
+ <script src="/ads/whatsapp-prompt.js"></script>
+
+
+
+
+<script>
+	function show_menu_mob()
+	{
+		document.getElementById("nav_wrap").className += 'show_mob_menu';
+		document.getElementById("menu_hndlr").innerHTML = '<i onClick="hide_menu_mob();" class="fa fa-times"></i>';
+	}
+	
+	function hide_menu_mob()
+	{
+		document.getElementById("nav_wrap").className = '';
+		document.getElementById("menu_hndlr").innerHTML = '<i onClick="show_menu_mob();" class="fa fa-bars"></i>';
+	}
+	
+	function on_search() {
+      document.getElementById("search_wrap").style.top = "0";
+      document.getElementById("kwd").focus();
+    }
+    
+    function off_search() {
+      document.getElementById("search_wrap").style.top = "-100px";
+    }
+	
+	if(document.getElementById("ScrollToTop"))
+	{
+		var ScrollButton = document.getElementById("ScrollToTop");
+		window.onscroll = function() {scrollFunction()};
+		function scrollFunction() {
+		  if (window.pageYOffset > 20) {
+			ScrollButton.style.display = "block";
+		  } else {
+			ScrollButton.style.display = "none";
+		  }
+		}
+	}
+	
+    function topFunction() {
+      document.body.scrollIntoView({behavior: "smooth"});
+    }
+	
+	function scrollToi(id) 
+    {
+        this.event.preventDefault();	
+        var yOffset = 0; 
+        var element = document.getElementById(id);
+        var y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+		y = y - parseInt(60);
+        window.scrollTo({top: y, behavior: 'smooth'});
+    }
+	
+	function scrollToc(to_id) 
+    {
+        this.event.preventDefault();
+        var element = document.getElementById(to_id);
+        element.scrollIntoView({ behavior: 'smooth', block: 'start'});
+        setTimeout(function(){window.location.hash = to_id; }, 100);
+    }
+	
+	function share_this_up(elem)
+	{
+		var url = document.getElementById(elem).getAttribute('data-url');
+		var title = document.getElementById(elem).getAttribute('data-title');
+		
+		var pop_url = '';
+		
+		if(elem == 'share_facebook')
+		{
+			pop_url = 'https://www.facebook.com/sharer/sharer.php?u='+url;
+		}
+		else if(elem == 'share_twitter')
+		{
+			pop_url = 'https://twitter.com/intent/tweet?text='+title+'&url='+url;
+		}
+		else if(elem == 'share_reddit')
+		{
+			pop_url = 'http://www.reddit.com/submit?url='+url+'&title='+title;
+		}
+		else if(elem == 'share_pinterest')
+		{
+			pop_url = 'http://www.pinterest.com/pin/create/button/?url='+url+'&description='+title;
+		}
+		
+		window.open(pop_url, "PopupWindow", "width=500,height=500,scrollbars=yes,resizable=no");
+	}
+</script>
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.2/lazysizes-umd.min.js"></script>
+
+<script type="uplazyloadscript">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MBVXX7');</script>
+
+
+
+
+
+
+
+<script type="uplazyloadscript" src="https://cdn.urdupoint.com/ads/uniliver.js"></script>
+<script type="uplazyloadscript">
+// Sets DIL instance, drops 1st party AAM UUI & declares user ID
+var unilevertdcDil = DIL.create({
+    partner: "unilever3",
+    uuidCookie: {
+        name: "aam_uuid",
+        days: 30,
+        useJSONPOnly: true
+    },
+    //sets up ECID 
+    visitorService: {
+        namespace: "36A37AC159F1E4EE0A495C6A@AdobeOrg"
+    },
+    containerNSID: 0 // will change depending on site or business unit deployed on.	              
+});
+
+
+//URI Data Collection
+
+function objIsEmpty(obj) { 
+for(var prop in obj) { 
+if(obj.hasOwnProperty(prop) && prop !== "")
+ return false; 
+} 
+return true; 
+} 
+var uriData = DIL.tools.decomposeURI(document.URL); 
+delete uriData.search; 
+delete uriData.href; 
+
+if (!objIsEmpty(uriData.uriParams))
+{ 
+unilevertdcDil.api.signals(uriData.uriParams, 'c_');
+ }; 
+delete uriData.uriParams;
+
+uriData['section'] = 'kids';
+
+//console.log(uriData);
+
+unilevertdcDil.api.signals(uriData, 'c_');
+
+
+function pushGA(culture, event){
+    if (unilevertdcDil && typeof ga !== 'undefined') {             
+        var gobj = new Object();         
+          gobj.Culture = culture;
+          gobj.Event = event;          
+          //console.log(gobj);
+          unilevertdcDil.api.signals(gobj, "c_").submit();        
+
+    }
+
+}
+
+//Google Analytics collection
+if (unilevertdcDil && typeof ga !== 'undefined') {
+    DIL.modules.GA.submitUniversalAnalytics(ga, unilevertdcDil);
+}
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"1f08d3550e4945c7aacc59e0fc913651","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9da7f04aecfff9f4',t:'MTc3MzIwNDYzMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body></html>
