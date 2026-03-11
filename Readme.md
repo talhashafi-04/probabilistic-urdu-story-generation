@@ -11,33 +11,13 @@
 ![Chatbot Screenshot](docs/screenshot.png)
 
 > *Type an Urdu opening line, hit داستان سنائیں, and watch your story unfold word by word.*
+TRY NOW : https://urdu-story-generation-eight.vercel.app/
 
 ---
 
 ## 🏗️ Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    Vercel (Frontend)                     │
-│              HTML + CSS + Vanilla JS                     │
-│         Noto Nastaliq Urdu · Classical Parchment UI      │
-└─────────────────────┬───────────────────────────────────┘
-                      │  POST /generate (SSE Stream)
-                      ▼
-┌─────────────────────────────────────────────────────────┐
-│                  Render (Backend)                        │
-│                FastAPI + Uvicorn                         │
-│         Docker Container · GitHub Actions CI/CD          │
-└─────────────────────┬───────────────────────────────────┘
-                      │
-          ┌───────────┴───────────┐
-          ▼                       ▼
-┌─────────────────┐   ┌───────────────────────┐
-│  BPE Tokenizer  │   │  Trigram Language Model│
-│  4000 merges    │   │  MLE + Deleted Interp  │
-│  Urdu-optimized │   │  1M+ trigrams          │
-└─────────────────┘   └───────────────────────┘
-```
+![Chatbot Screenshot](docs/arch.png)
 
 ---
 
